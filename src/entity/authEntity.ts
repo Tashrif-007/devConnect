@@ -2,25 +2,23 @@ import {  Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique,
 import { User } from "./userEntity";
 
 @Entity({ name: "Auth" })
-@Unique(["username", "email"])
 export class Auth {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({unique: true})
   username: string;
 
-  @Column()
+  @Column({unique: true})
   email: string;
 
   @Column()
   password: string; 
 
-  @OneToOne(() => User, { onDelete: "CASCADE", onUpdate: "CASCADE"})
-  @JoinColumn({ name: "username", referencedColumnName: "username"})
-  userByUsername: User;
-
-  @OneToOne(() => User, { onDelete: "CASCADE", onUpdate: "CASCADE" })
-  @JoinColumn({ name: "email", referencedColumnName: "email" })
-  userByEmail: User;
+  @OneToOne(() => User)
+  @JoinColumn([
+    { name: "username", referencedColumnName: "username" },
+    { name: "email", referencedColumnName: "email" }
+  ])
+  user: User;
 }

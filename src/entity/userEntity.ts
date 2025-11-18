@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, DeleteDateColumn, Unique } from 'typeorm';
 import { Auth } from './authEntity';
 
 export enum UserRole {
@@ -28,7 +28,4 @@ export class User {
 
   @Column({ type: "timestamp", nullable: true })
   passwordLastModificationTime: Date | null;
-
-  @OneToOne(() => Auth, (auth) => auth)
-  auth: Auth;
 }
