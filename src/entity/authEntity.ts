@@ -15,10 +15,10 @@ export class Auth {
   @Column()
   password: string; 
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, user => user.auth)
   @JoinColumn([
-    { name: "username", referencedColumnName: "username" },
-    { name: "email", referencedColumnName: "email" }
+    { name: "username", referencedColumnName: "username"},
+    { name: "email", referencedColumnName: "email"},
   ])
   user: User;
 }

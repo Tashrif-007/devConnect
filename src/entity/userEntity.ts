@@ -7,6 +7,7 @@ export enum UserRole {
 }
 
 @Entity({ name: "User" })
+@Unique(["username", "email"])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,4 +29,7 @@ export class User {
 
   @Column({ type: "timestamp", nullable: true })
   passwordLastModificationTime: Date | null;
+
+  @OneToOne(() => Auth, (auth) => auth.user)
+  auth: Auth;
 }
