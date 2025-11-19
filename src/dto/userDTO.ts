@@ -21,7 +21,6 @@ export class UserResponseDto {
   email: string;
   joinDate: Date;
   role: UserRole;
-  passwordLastModificationTime: Date | null;
 
   static fromEntity(user: any): UserResponseDto {
     const dto = new UserResponseDto();
@@ -31,7 +30,6 @@ export class UserResponseDto {
     dto.email = user.email;
     dto.joinDate = user.joinDate;
     dto.role = user.role;
-    dto.passwordLastModificationTime = user.passwordLastModificationTime;
     return dto;
   }
 }

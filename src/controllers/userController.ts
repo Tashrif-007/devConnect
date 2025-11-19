@@ -45,8 +45,13 @@ export class UserController {
         ResponseFormatter.success(user, 'User retrieved successfully')
       );
     } catch (error: any) {
-      return res.status(HttpStatus.NOT_FOUND).json(
-        ResponseFormatter.error(error.message)
+      if (error.message === 'User not found') {
+        return res.status(HttpStatus.NOT_FOUND).json(
+          ResponseFormatter.error(error.message)
+        );
+      }
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to fetch user')
       );
     }
   };
@@ -55,15 +60,15 @@ export class UserController {
     try {
       const userData: UpdateUserDto = req.body;
       const user = await this.userService.updateUser(req.params.userId, userData);
-      if (!user) {
-        return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error('User not found')
-        );
-      }
       res.status(HttpStatus.OK).json(
         ResponseFormatter.success(user, 'User updated successfully')
       );
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message === 'User not found') {
+        return res.status(HttpStatus.NOT_FOUND).json(
+          ResponseFormatter.error(error.message)
+        );
+      }
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
         ResponseFormatter.error('Failed to update user')
       );

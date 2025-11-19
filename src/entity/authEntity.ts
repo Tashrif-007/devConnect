@@ -15,6 +15,9 @@ export class Auth {
   @Column()
   password: string; 
 
+  @Column({ type: "timestamp", nullable: true })
+  passwordLastModificationTime: Date | null;
+
   @OneToOne(() => User, user => user.auth)
   @JoinColumn([
     { name: "username", referencedColumnName: "username"},

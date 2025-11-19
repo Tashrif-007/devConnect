@@ -27,9 +27,6 @@ export class User {
   @Column({ type: "enum", enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
-  @Column({ type: "timestamp", nullable: true })
-  passwordLastModificationTime: Date | null;
-
   @DeleteDateColumn()
   deletedAt: Date | null;
 

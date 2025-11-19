@@ -23,9 +23,12 @@ export class UserService {
         }
         return UserResponseDto.fromEntity(user);
     }
-    async updateUser(userId: string, userData: UpdateUserDto): Promise<UserResponseDto | null> {
+    async updateUser(userId: string, userData: UpdateUserDto): Promise<UserResponseDto> {
         const user = await this.userRepository.update(userId, userData);
-        return user ? UserResponseDto.fromEntity(user) : null;
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return UserResponseDto.fromEntity(user);
     }
     async deleteUser(userId: string): Promise<void> {
         const result = await this.userRepository.softDelete(userId);
