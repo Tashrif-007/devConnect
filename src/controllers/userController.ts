@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import { User } from "../entity/userEntity";
 import { UserService } from "../services/userService";
+import { CreateUserDto, UpdateUserDto } from '../dto/userDTO';
+import { HttpStatus } from '../utils/httpStatus';
+import { ResponseFormatter } from '../utils/apiResponse';
 
 export class UserController {
   private userService: UserService;
@@ -11,59 +13,76 @@ export class UserController {
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const userData: User = req.body;
+      const userData: CreateUserDto = req.body;
       const user = await this.userService.createUser(userData);
-      res.status(201).json({
-        message: "User created Successfully",
-        user: user
-      });
+      res.status(HttpStatus.CREATED).json(
+        ResponseFormatter.success(user, 'User created successfully')
+      );
     } catch (error) {
-      res.status(500).json({
-        error: "Failed to create user"
-      });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to create user')
+      );
     }
   };
 
   getAllUsers = async (req: Request, res: Response) => {
     try {
       const users = await this.userService.getAllUsers();
-      res.status(200).json(users);
+      res.status(HttpStatus.OK).json(
+        ResponseFormatter.success(users, 'Users retrieved successfully')
+      );
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch users' });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to fetch users')
+      );
     }
   };
 
   getUserById = async (req: Request, res: Response) => {
     try {
       const user = await this.userService.getUserById(req.params.userId);
-      res.status(200).json(user);
+      res.status(HttpStatus.OK).json(
+        ResponseFormatter.success(user, 'User retrieved successfully')
+      );
     } catch (error: any) {
-      return res.status(404).json({ error: error.message });
+      return res.status(HttpStatus.NOT_FOUND).json(
+        ResponseFormatter.error(error.message)
+      );
     }
   };
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const userData: User = req.body;
+      const userData: UpdateUserDto = req.body;
       const user = await this.userService.updateUser(req.params.userId, userData);
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(HttpStatus.NOT_FOUND).json(
+          ResponseFormatter.error('User not found')
+        );
       }
-      res.status(200).json(user);
+      res.status(HttpStatus.OK).json(
+        ResponseFormatter.success(user, 'User updated successfully')
+      );
     } catch (error) {
-      res.status(500).json({ error: 'Failed to update user' });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to update user')
+      );
     }
   };
 
   deleteUser = async (req: Request, res: Response) => {
     try {
-      const result = await this.userService.deleteUser(req.params.userId);
-      if (!result) {
-        return res.status(404).json({ error: 'User not found' });
+      await this.userService.deleteUser(req.params.userId);
+      res.status(HttpStatus.NO_CONTENT).send();
+    } catch (error: any) {
+      if (error.message === 'User not found') {
+        return res.status(HttpStatus.NOT_FOUND).json(
+          ResponseFormatter.error(error.message)
+        );
       }
-      res.sendStatus(204);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to delete user' });
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to delete user')
+      );
     }
   };
 }

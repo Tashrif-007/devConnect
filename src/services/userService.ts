@@ -1,5 +1,5 @@
-import { User } from "../entity/userEntity";
 import { UserRepository } from "../repositories/userRepository";
+import { CreateUserDto, UpdateUserDto, UserResponseDto } from "../dto/userDTO";
 
 export class UserService {
     private userRepository: UserRepository;
@@ -8,23 +8,29 @@ export class UserService {
         this.userRepository = new UserRepository();
     }
 
-    async createUser(userData: User) {
-        return this.userRepository.create(userData);
+    async createUser(userData: CreateUserDto): Promise<UserResponseDto> {
+        const user = await this.userRepository.create(userData);
+        return UserResponseDto.fromEntity(user);
     }
-    async getAllUsers() {
-        return this.userRepository.findAll();
+    async getAllUsers(): Promise<UserResponseDto[]> {
+        const users = await this.userRepository.findAll();
+        return users.map(user => UserResponseDto.fromEntity(user));
     }
-    async getUserById(userId: string) {
-        const user = await this.userRepository.findById(parseInt(userId));
+    async getUserById(userId: string): Promise<UserResponseDto> {
+        const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new Error('User not found');
         }
-        return user;
+        return UserResponseDto.fromEntity(user);
     }
-    async updateUser(userId: string, userData: Partial<User>) {
-        return this.userRepository.update(parseInt(userId), userData);
+    async updateUser(userId: string, userData: UpdateUserDto): Promise<UserResponseDto | null> {
+        const user = await this.userRepository.update(userId, userData);
+        return user ? UserResponseDto.fromEntity(user) : null;
     }
-    async deleteUser(userId: string) {
-        return this.userRepository.softDelete(parseInt(userId));
+    async deleteUser(userId: string): Promise<void> {
+        const result = await this.userRepository.softDelete(userId);
+        if (!result.affected || result.affected === 0) {
+            throw new Error('User not found');
+        }
     }
 }

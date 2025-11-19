@@ -3,8 +3,8 @@ import { User } from "./userEntity";
 
 @Entity({ name: "Auth" })
 export class Auth {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({unique: true})
   username: string;

@@ -9,8 +9,8 @@ export enum UserRole {
 @Entity({ name: "User" })
 @Unique(["username", "email"])
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true })
   username: string;
@@ -29,6 +29,9 @@ export class User {
 
   @Column({ type: "timestamp", nullable: true })
   passwordLastModificationTime: Date | null;
+
+  @DeleteDateColumn()
+  deletedAt: Date | null;
 
   @OneToOne(() => Auth, (auth) => auth.user)
   auth: Auth;
