@@ -2,8 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/userService';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
+<<<<<<< HEAD
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
+<<<<<<< HEAD
 import { UserResponseDTO } from '../dto/userDTO';
+=======
+import { UserResponseDto } from '../dto/userDTO';
+=======
+>>>>>>> 430ceaa (feat: integrate validation middleware and apply to routes)
+>>>>>>> 0d7bce0 (feat: integrate validation middleware and apply to routes)
 
 export class UserController {
   private userService: UserService;
