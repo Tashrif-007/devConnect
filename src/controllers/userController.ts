@@ -2,11 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/userService';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
-import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
-
-
+import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 
 export class UserController {
     private userService: UserService;
