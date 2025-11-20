@@ -1,5 +1,5 @@
 import { UserRepository } from "../repositories/userRepository";
-import { CreateUserDto, UpdateUserDto, UserResponseDto } from "../dto/userDTO";
+import { CreateUserDTO, UpdateUserDTO, UserResponseDto } from "../dto/userDTO";
 import { USER_RESPONSE_MESSAGES } from "../constants/messages";
 import { mapUserToResponseDto } from "../utils/userMapper";
 
@@ -10,7 +10,7 @@ export class UserService {
         this.userRepository = new UserRepository();
     }
 
-    async createUser(userData: CreateUserDto): Promise<UserResponseDto> {
+    async createUser(userData: CreateUserDTO): Promise<UserResponseDto> {
         const user = await this.userRepository.create(userData);
         return mapUserToResponseDto(user);
     }
@@ -25,7 +25,7 @@ export class UserService {
         }
         return mapUserToResponseDto(user);
     }
-    async updateUser(userId: string, userData: UpdateUserDto): Promise<UserResponseDto> {
+    async updateUser(userId: string, userData: UpdateUserDTO): Promise<UserResponseDto> {
         const user = await this.userRepository.update(userId, userData);
         if (!user) {
             throw new Error(USER_RESPONSE_MESSAGES.NOT_FOUND);

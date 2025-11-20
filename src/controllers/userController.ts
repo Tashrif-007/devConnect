@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { UserService } from "../services/userService";
-import { CreateUserDto, UpdateUserDto } from '../dto/userDTO';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
-import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 
 export class UserController {
   private userService: UserService;
@@ -14,14 +12,13 @@ export class UserController {
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const userData: CreateUserDto = req.body;
-      const user = await this.userService.createUser(userData);
+      const user = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(
-        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED)
+        ResponseFormatter.success(user, 'User created successfully')
       );
     } catch (error) {
-      res.status(HttpStatus.BAD_REQUEST).json(
-        ResponseFormatter.error(USER_RESPONSE_MESSAGES.CREATION_FAILED)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to create user')
       );
     }
   };
@@ -30,11 +27,11 @@ export class UserController {
     try {
       const users = await this.userService.getAllUsers();
       res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.USERS_RETRIEVED)
+        ResponseFormatter.success(users, 'Users retrieved successfully')
       );
     } catch (error) {
-      res.status(HttpStatus.BAD_REQUEST).json(
-        ResponseFormatter.error(USER_RESPONSE_MESSAGES.FETCH_ALL_FAILED)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to fetch users')
       );
     }
   };
@@ -43,35 +40,34 @@ export class UserController {
     try {
       const user = await this.userService.getUserById(req.params.userId);
       res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED)
+        ResponseFormatter.success(user, 'User retrieved successfully')
       );
     } catch (error: any) {
-      if (error.message === USER_RESPONSE_MESSAGES.NOT_FOUND) {
+      if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
+          ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.BAD_REQUEST).json(
-        ResponseFormatter.error(USER_RESPONSE_MESSAGES.FETCH_FAILED)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to fetch user')
       );
     }
   };
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const userData: UpdateUserDto = req.body;
-      const user = await this.userService.updateUser(req.params.userId, userData);
+      const user = await this.userService.updateUser(req.params.userId, req.body);
       res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED)
+        ResponseFormatter.success(user, 'User updated successfully')
       );
     } catch (error: any) {
-      if (error.message === USER_RESPONSE_MESSAGES.NOT_FOUND) {
+      if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
+          ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.BAD_REQUEST).json(
-        ResponseFormatter.error(USER_RESPONSE_MESSAGES.UPDATE_FAILED)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to update user')
       );
     }
   };
@@ -81,13 +77,13 @@ export class UserController {
       await this.userService.deleteUser(req.params.userId);
       res.status(HttpStatus.NO_CONTENT).send();
     } catch (error: any) {
-      if (error.message === USER_RESPONSE_MESSAGES.NOT_FOUND) {
+      if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
+          ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.BAD_REQUEST).json(
-        ResponseFormatter.error(USER_RESPONSE_MESSAGES.DELETE_FAILED)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+        ResponseFormatter.error('Failed to delete user')
       );
     }
   };
