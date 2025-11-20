@@ -19,7 +19,7 @@ export class UserController {
         ResponseFormatter.success(user, 'User created successfully')
       );
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      res.status(HttpStatus.BAD_REQUEST).json(
         ResponseFormatter.error('Failed to create user')
       );
     }
@@ -32,7 +32,7 @@ export class UserController {
         ResponseFormatter.success(users, 'Users retrieved successfully')
       );
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      res.status(HttpStatus.BAD_REQUEST).json(
         ResponseFormatter.error('Failed to fetch users')
       );
     }
@@ -50,7 +50,7 @@ export class UserController {
           ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      res.status(HttpStatus.BAD_REQUEST).json(
         ResponseFormatter.error('Failed to fetch user')
       );
     }
@@ -69,7 +69,7 @@ export class UserController {
           ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      res.status(HttpStatus.BAD_REQUEST).json(
         ResponseFormatter.error('Failed to update user')
       );
     }
@@ -85,7 +85,7 @@ export class UserController {
           ResponseFormatter.error(error.message)
         );
       }
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
+      res.status(HttpStatus.BAD_REQUEST).json(
         ResponseFormatter.error('Failed to delete user')
       );
     }
