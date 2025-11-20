@@ -1,24 +1,18 @@
-import {  Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique, OneToOne,} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
 import { User } from "./userEntity";
 
 @Entity({ name: "Auth" })
 export class Auth {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({unique: true})
-  username: string;
-
-  @Column({unique: true})
-  email: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  password: string; 
+  password: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  passwordLastModificationTime: Date | null;
 
   @OneToOne(() => User, user => user.auth)
-  @JoinColumn([
-    { name: "username", referencedColumnName: "username"},
-    { name: "email", referencedColumnName: "email"},
-  ])
+  @JoinColumn({ name: "userId" })
   user: User;
 }
