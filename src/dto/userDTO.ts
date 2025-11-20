@@ -1,4 +1,4 @@
-import { UserRole } from '../entity/userEntity';
+import { User, UserRole } from '../entity/userEntity';
 
 export class CreateUserDto {
   username: string;
@@ -22,7 +22,7 @@ export class UserResponseDto {
   joinDate: Date;
   role: UserRole;
 
-  static fromEntity(user: any): UserResponseDto {
+  static fromEntity(user: User): UserResponseDto {
     const dto = new UserResponseDto();
     dto.id = user.id;
     dto.username = user.username;
