@@ -5,12 +5,13 @@ import userRouter from './routes/userRoute';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const VERSION = process.env.VERSION;
 const app = express();
 
 app.use(express.json());
-app.use('/api/users', userRouter);
+app.use(`${VERSION}/users`, userRouter);
 
-app.get("/api/health", (req, res) => {
+app.get(`${VERSION}/health`, (req, res) => {
     res.status(200).json({
         status: "ok",
         timestamp: new Date().toISOString(),
