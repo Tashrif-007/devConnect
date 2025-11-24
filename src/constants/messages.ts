@@ -50,5 +50,6 @@ export const ERROR_MESSAGES = {
   ACCESS_FORBIDDEN: 'Access forbidden',
   RESOURCE_NOT_FOUND: 'Resource not found',
   UNAUTHORIZED: 'Unauthorized access',
-  VALIDATION_FAILED: 'Validation failed'
+  VALIDATION_FAILED: 'Validation failed',
+  SERVER_ERROR: 'Internal Server Error',
 } as const;
