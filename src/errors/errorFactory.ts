@@ -43,7 +43,7 @@ export class ErrorFactory {
   /**
    * Create a DatabaseError (500)
    */
-  static database(message: string, isOperational?: boolean): DatabaseError {
-    return new DatabaseError(message, isOperational);
+  static database(message: string): DatabaseError {
+    return new DatabaseError(message);
   }
 }
