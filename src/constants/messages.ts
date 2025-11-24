@@ -18,3 +18,12 @@ export const VALIDATION_MESSAGES = {
   VALIDATION_FAILED: 'Validation failed',
   SERVER_ERROR: 'Internal Server Error',
 } as const;
+
+export const ERROR_MESSAGES = {
+  CONFLICT: 'Resource Conflict',
+  DATABASE_FAILED: 'Database operation failed',
+  ACCESS_FORBIDDEN: 'Access forbidden',
+  RESOURCE_NOT_FOUND: 'Resource not found',
+  UNAUTHORIZED: 'Unauthorized access',
+  VALIDATION_FAILED: 'Validation failed'
+} as const;
