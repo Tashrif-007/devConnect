@@ -4,6 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { AppError, NotFoundError, ConflictError } from '../errors';
+import { UserResponseDto } from '../dto/userDTO';
 
 export class UserController {
   private userService: UserService;
@@ -14,7 +15,7 @@ export class UserController {
 
   createUser = async (req: Request, res: Response) => {
     try {
-      const user = await this.userService.createUser(req.body);
+      const user: UserResponseDto = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
     } catch (error) {
       if (error instanceof ConflictError) {
@@ -29,32 +30,21 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response) => {
     try {
-      const users = await this.userService.getAllUsers();
-      res
-        .status(HttpStatus.OK)
-        .json(
-          ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.RETRIEVED),
-        );
+      const users: UserResponseDto[] = await this.userService.getAllUsers();
+      res.status(HttpStatus.OK).json(
+          ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
       if (error instanceof AppError) {
-        return res
-          .status(error.statusCode)
-          .json(ResponseFormatter.error(error.message));
+        return res.status(error.statusCode).json(ResponseFormatter.error(error.message));
       }
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json(ResponseFormatter.error(USER_RESPONSE_MESSAGES.FETCH_ALL_FAILED));
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(ResponseFormatter.error(USER_RESPONSE_MESSAGES.FETCH_ALL_FAILED));
     }
   };
 
   getUserById = async (req: Request, res: Response) => {
     try {
-      const user = await this.userService.getUserById(req.params.userId);
-      res
-        .status(HttpStatus.OK)
-        .json(
-          ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED),
-        );
+      const user: UserResponseDto = await this.userService.getUserById(req.params.userId);
+      res.status(HttpStatus.OK).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
       if (error instanceof NotFoundError) {
         return res
@@ -74,7 +64,7 @@ export class UserController {
 
   updateUser = async (req: Request, res: Response) => {
     try {
-      const user = await this.userService.updateUser(
+      const user: UserResponseDto = await this.userService.updateUser(
         req.params.userId,
         req.body,
       );
