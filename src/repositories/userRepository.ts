@@ -1,8 +1,8 @@
 import { AppDataSource } from '../config/dataSource';
 import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
-import { UpdateResult } from 'typeorm';
 import { SortDirection, UserOrderBy } from '../enums';
+import { UpdateResult } from 'typeorm';
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
