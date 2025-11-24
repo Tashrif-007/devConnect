@@ -14,7 +14,7 @@ export class UserController {
 
   createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.userService.createUser(req.body);
+      const user: UserResponseDto = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
     } catch (error) {
       next(error);
