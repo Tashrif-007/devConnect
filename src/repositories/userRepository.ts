@@ -1,7 +1,10 @@
 import { AppDataSource } from '../config/dataSource';
 import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
+<<<<<<< HEAD
 import { UpdateResult } from 'typeorm';
+=======
+>>>>>>> 0d7f2f6 (feat: integrate custom specific error classes)
 
 export class UserRepository {
   private userRepository = AppDataSource.getRepository(User);

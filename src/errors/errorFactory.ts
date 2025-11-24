@@ -3,10 +3,11 @@ import { ValidationError } from './ValidationError';
 import { UnauthorizedError } from './UnauthorizedError';
 import { ForbiddenError } from './ForbiddenError';
 import { DatabaseError } from './DatabaseError';
+import { ConflictError } from './ConflictError';
 
 /**
  * Error factory utility functions for creating common errors
- * 
+ *
  * @example
  * throw ErrorFactory.notFound('User not found');
  * throw ErrorFactory.validation('Invalid email');
@@ -38,6 +39,13 @@ export class ErrorFactory {
    */
   static forbidden(message: string): ForbiddenError {
     return new ForbiddenError(message);
+  }
+
+  /**
+   * Create a ConflictError (409)
+   */
+  static conflict(message: string): ConflictError {
+    return new ConflictError(message);
   }
 
   /**
