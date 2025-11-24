@@ -13,6 +13,7 @@ const createResourceMessages = (resourceName: string) => ({
 });
 
 export const USER_RESPONSE_MESSAGES = {
+<<<<<<< HEAD
     ...createResourceMessages('User'),
     USERNAME_EXISTS: 'Username already exists',
     EMAIL_EXISTS: 'Email already exists',
@@ -32,4 +33,24 @@ export const ERROR_MESSAGES = {
 
 export const VALIDATION_MESSAGES = {
     VALIDATION_FAILED: 'Validation failed',
+=======
+  CREATED: 'User created successfully',
+  UPDATED: 'User updated successfully',
+  DELETED: 'User deleted successfully',
+  RETRIEVED: 'User retrieved successfully',
+  USERS_RETRIEVED: 'Users retrieved successfully',
+  NOT_FOUND: 'User not found',
+  USERNAME_EXISTS: 'Username already exists',
+  EMAIL_EXISTS: 'Email already exists',
+  CREATION_FAILED: 'Failed to create user',
+  UPDATE_FAILED: 'Failed to update user',
+  DELETE_FAILED: 'Failed to delete user',
+  FETCH_FAILED: 'Failed to fetch user',
+  FETCH_ALL_FAILED: 'Failed to fetch users',
+} as const;
+
+export const VALIDATION_MESSAGES = {
+  VALIDATION_FAILED: 'Validation failed',
+  SERVER_ERROR: 'Internal Server Error',
+>>>>>>> 0d7f2f6 (feat: integrate custom specific error classes)
 } as const;
