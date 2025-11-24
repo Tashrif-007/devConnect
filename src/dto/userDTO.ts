@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { User, UserRole } from '../entity/userEntity';
+import { UserRole } from '../entity/userEntity';
 
 export const CreateUserSchema = z.object({
   username: z
