@@ -8,13 +8,6 @@ export const CreateUserSchema = z.object({
   role: z.enum(UserRole).optional(),
 });
 
-// export const UpdateUserSchema = z.object({
-//   username: z.string().trim().min(3, 'Username must be at least 3 characters').max(50).optional(),
-//   name: z.string().trim().min(1, 'Name is required').max(100).optional(),
-//   email: z.string().trim().email('Invalid email format').optional(),
-//   role: z.enum(UserRole).optional(),
-// });
-
 export const UpdateUserSchema = CreateUserSchema.partial();
 
 export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
