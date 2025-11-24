@@ -4,10 +4,18 @@ import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
 
 export class UserService {
-    private userRepository: UserRepository;
+  private userRepository: UserRepository;
 
-    constructor() {
-        this.userRepository = new UserRepository();
+  constructor() {
+    this.userRepository = new UserRepository();
+  }
+
+  async createUser(userData: CreateUserDTO): Promise<UserResponseDto> {
+    const existingUserByUsername = await this.userRepository.findByUsername(
+      userData.username,
+    );
+    if (existingUserByUsername) {
+      throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
     }
 
     async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {

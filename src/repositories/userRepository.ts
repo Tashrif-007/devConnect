@@ -5,7 +5,7 @@ import { UpdateResult } from 'typeorm';
 import { PaginationResult } from '../dto/paginationDTO';
 
 export class UserRepository {
-    private userRepository = AppDataSource.getRepository(User);
+  private userRepository = AppDataSource.getRepository(User);
 
     async create(userData: CreateUserDTO): Promise<User> {
         const user = this.userRepository.create(userData);
