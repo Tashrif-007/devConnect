@@ -9,8 +9,8 @@ import { HttpStatus } from '../constants/httpStatus';
  * throw new DatabaseError('Failed to connect to database');
  */
 export class DatabaseError extends AppError {
-  constructor(message: string = 'Database operation failed', isOperational: boolean = true) {
-    super(message, HttpStatus.INTERNAL_SERVER_ERROR, isOperational);
+  constructor(message: string = 'Database operation failed') {
+    super(message, HttpStatus.INTERNAL_SERVER_ERROR);
     Object.setPrototypeOf(this, DatabaseError.prototype);
   }
 }
