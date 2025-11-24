@@ -1,5 +1,6 @@
 import { AppError } from './AppError';
 import { HttpStatus } from '../constants/httpStatus';
+import { ERROR_MESSAGES } from '../constants/messages';
 
 /**
  * ValidationError - Used when request validation fails
@@ -9,7 +10,7 @@ import { HttpStatus } from '../constants/httpStatus';
  * throw new ValidationError('Invalid email format');
  */
 export class ValidationError extends AppError {
-  constructor(message: string = 'Validation failed') {
+  constructor(message: string = ERROR_MESSAGES.VALIDATION_FAILED) {
     super(message, HttpStatus.BAD_REQUEST);
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
