@@ -17,7 +17,7 @@ export class UserService {
   }
 
   async createUser(userData: CreateUserDTO): Promise<UserResponseDto> {
-    const existingUserByUsername = await this.userRepository.findByUsername(
+    const existingUserByUsername: User | null = await this.userRepository.findByUsername(
       userData.username,
     );
     if (existingUserByUsername) {
