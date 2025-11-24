@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from "../services/userService";
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
+import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 
 export class UserController {
   private userService: UserService;
@@ -14,7 +15,7 @@ export class UserController {
     try {
       const user = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(
-        ResponseFormatter.success(user, 'User created successfully')
+        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED)
       );
     } catch (error) {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
@@ -40,12 +41,12 @@ export class UserController {
     try {
       const user = await this.userService.getUserById(req.params.userId);
       res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(user, 'User retrieved successfully')
+        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED)
       );
     } catch (error: any) {
       if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(error.message)
+          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
         );
       }
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
@@ -58,12 +59,12 @@ export class UserController {
     try {
       const user = await this.userService.updateUser(req.params.userId, req.body);
       res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(user, 'User updated successfully')
+        ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED)
       );
     } catch (error: any) {
       if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(error.message)
+          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
         );
       }
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
@@ -79,7 +80,7 @@ export class UserController {
     } catch (error: any) {
       if (error.message === 'User not found') {
         return res.status(HttpStatus.NOT_FOUND).json(
-          ResponseFormatter.error(error.message)
+          ResponseFormatter.error(USER_RESPONSE_MESSAGES.NOT_FOUND)
         );
       }
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
