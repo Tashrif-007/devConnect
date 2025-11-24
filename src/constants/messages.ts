@@ -54,3 +54,12 @@ export const VALIDATION_MESSAGES = {
   SERVER_ERROR: 'Internal Server Error',
 >>>>>>> 0d7f2f6 (feat: integrate custom specific error classes)
 } as const;
+
+export const ERROR_MESSAGES = {
+  CONFLICT: 'Resource Conflict',
+  DATABASE_FAILED: 'Database operation failed',
+  ACCESS_FORBIDDEN: 'Access forbidden',
+  RESOURCE_NOT_FOUND: 'Resource not found',
+  UNAUTHORIZED: 'Unauthorized access',
+  VALIDATION_FAILED: 'Validation failed'
+} as const;
