@@ -1,19 +1,12 @@
 import { z } from 'zod';
 
 export const CreateAuthSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(128),
-  userId: z.uuid('Invalid user ID format'),
+  password: z.string().trim().min(8, 'Password must be at least 8 characters').max(128),
+  userId: z.string().trim().uuid('Invalid user ID format'),
 });
 
 export const UpdateAuthSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(128)
-    .optional(),
+  password: z.string().trim().min(8, 'Password must be at least 8 characters').max(128).optional(),
 });
 
 export type CreateAuthDTO = z.infer<typeof CreateAuthSchema>;
