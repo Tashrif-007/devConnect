@@ -1,11 +1,11 @@
 import { AppDataSource } from "../config/dataSource";
 import { User } from "../entity/userEntity";
-import { CreateUserDto, UpdateUserDto } from "../dto/userDTO";
+import { CreateUserDTO, UpdateUserDTO } from "../dto/userDTO";
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
 
-    async create(userData: CreateUserDto) {
+    async create(userData: CreateUserDTO) {
         const user = this.userRepository.create(userData);
         return this.userRepository.save(user);
     }
@@ -15,7 +15,7 @@ export class UserRepository {
     async findById(userId: string) {
         return this.userRepository.findOne({ where: {id: userId}});
     }
-    async update(userId: string, userData: UpdateUserDto) {
+    async update(userId: string, userData: UpdateUserDTO) {
         await this.userRepository.update(userId, userData);
         return this.findById(userId);
     }

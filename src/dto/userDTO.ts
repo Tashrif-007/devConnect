@@ -1,18 +1,17 @@
-import { User, UserRole } from '../entity/userEntity';
+import { z } from 'zod';
+import { UserRole } from '../entity/userEntity';
 
-export interface CreateUserDto {
-  username: string;
-  name: string;
-  email: string;
-  role?: UserRole;
-}
+export const CreateUserSchema = z.object({
+  username: z.string().trim().min(3, 'Username must be at least 3 characters').max(50),
+  name: z.string().trim().min(1, 'Name is required').max(100),
+  email: z.email('Invalid email format'),
+  role: z.enum(UserRole).optional(),
+});
 
-export interface UpdateUserDto {
-  username?: string;
-  name?: string;
-  email?: string;
-  role?: UserRole;
-}
+export const UpdateUserSchema = CreateUserSchema.partial();
+
+export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
+export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
 
 export interface UserResponseDto {
   id: string;

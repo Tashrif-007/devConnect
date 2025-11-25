@@ -14,4 +14,5 @@ export const USER_RESPONSE_MESSAGES = {
 
 export const VALIDATION_MESSAGES = {
   VALIDATION_FAILED: 'Validation failed',
+  SERVER_ERROR: 'Internal Server Error'
 } as const;
