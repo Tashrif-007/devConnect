@@ -14,7 +14,7 @@ export class UserController {
 
   createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user: UserResponseDto = await this.userService.createUser(req.body);
+      const user = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
     } catch (error) {
       next(error);
@@ -23,7 +23,7 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const users: UserResponseDto[] = await this.userService.getAllUsers();
+      const users = await this.userService.getAllUsers();
       res.status(HttpStatus.OK).json(
           ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
@@ -33,7 +33,7 @@ export class UserController {
 
   getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user: UserResponseDto = await this.userService.getUserById(req.params.userId);
+      const user = await this.userService.getUserById(req.params.userId);
       res.status(HttpStatus.OK).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
       next(error);

@@ -5,7 +5,7 @@ import { ErrorFactory } from '../errors';
  * 404 handler for unmatched routes
  * Must be placed after all route definitions
  */
-export const notFoundHandler = (
+export const routeNotFoundHandler = (
   req: Request,
   res: Response,
   next: NextFunction,

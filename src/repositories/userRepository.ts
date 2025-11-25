@@ -7,14 +7,14 @@ export class UserRepository {
   private userRepository = AppDataSource.getRepository(User);
 
   async create(userData: CreateUserDTO): Promise<User> {
-    const user: User = this.userRepository.create(userData);
+    const user = this.userRepository.create(userData);
     return this.userRepository.save(user);
   }
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
   async findById(userId: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { id: userId } });
+    return this.userRepository.findOne({ where: { userId } });
   }
   async findByUsername(username: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { username } });
@@ -27,7 +27,7 @@ export class UserRepository {
     return this.findById(userId);
   }
   async softDelete(userId: string): Promise<UpdateResult> {
-    const result: UpdateResult = await this.userRepository.softDelete(userId);
+    const result = await this.userRepository.softDelete(userId);
     return result;
   }
 }

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { AppDataSource } from './config/dataSource';
 import userRouter from './routes/userRoute';
 import { errorHandler } from './middlewares/errorHandler';
-import { notFoundHandler } from './middlewares/notFoundHandler';
+import { routeNotFoundHandler } from './middlewares/routeNotFoundHandler';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +21,7 @@ app.get(`${VERSION}/health`, (req, res) => {
   });
 });
 
-app.use(notFoundHandler);
+app.use(routeNotFoundHandler);
 
 app.use(errorHandler);
 

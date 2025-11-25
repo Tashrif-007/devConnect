@@ -10,7 +10,7 @@ export const CreateUserSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100),
   email: z.email('Invalid email format'),
   role: z.enum(UserRole).optional(),
-});
+}).strict();
 
 export const UpdateUserSchema = CreateUserSchema.partial().refine(
   (data) => Object.keys(data).length > 0,
