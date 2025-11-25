@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { User } from '../entity/userEntity';
 import { Auth } from '../entity/authEntity';
 import dotenv from 'dotenv';
+import { Story } from '../entity/storyEntity';
 
 dotenv.config();
 
@@ -14,5 +15,5 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   database: process.env.DB_DB,
   synchronize: true,
-  entities: [User, Auth],
+  entities: [User, Auth, Story],
 });

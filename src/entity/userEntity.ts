@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, DeleteDateColumn, OneToMany } from 'typeorm';
 import { Auth } from './authEntity';
+import { Story } from './storyEntity';
 
 export enum UserRole {
     ADMIN = "ADMIN",
@@ -31,4 +32,7 @@ export class User {
 
   @OneToOne(() => Auth, (auth) => auth.user)
   auth: Auth;
+
+  @OneToMany(() => Story, story => story.user)
+  stories: Story[];
 }
