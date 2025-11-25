@@ -1,6 +1,7 @@
 import {
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     JoinColumn,
     ManyToOne,
@@ -28,6 +29,9 @@ export class Story {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 
     @ManyToOne(() => User, (user) => user.stories)
     @JoinColumn({ name: 'userId' })
