@@ -6,7 +6,6 @@ import { routeNotFoundHandler } from './middlewares/routeNotFoundHandler';
 import { ResponseFormatter } from './utils/apiResponse';
 import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
-import { envValues } from './utils/envParser';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
@@ -17,7 +16,6 @@ app.use(`${VERSION}/users`, userRouter);
 app.use(`${VERSION}/stories`, storyRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
-<<<<<<< HEAD
   const healthData = {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -29,20 +27,6 @@ app.get(`${VERSION}/health`, (req, res) => {
 });
 
 app.use(routeNotFoundHandler);
-=======
-  res.status(200).json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  });
-});
-
-<<<<<<< HEAD
-app.use(notFoundHandler);
->>>>>>> 3c84286 (feat: create global errorHandler and implement custom error classes)
-=======
-app.use(routeNotFoundHandler);
->>>>>>> 6f18cd4 (refactor: update to userId, authId, refactor routeNotFoundHandler, add password validation proper message)
 
 app.use(errorHandler);
 
