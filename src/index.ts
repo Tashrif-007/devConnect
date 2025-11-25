@@ -37,8 +37,12 @@ app.use(routeNotFoundHandler);
   });
 });
 
+<<<<<<< HEAD
 app.use(notFoundHandler);
 >>>>>>> 3c84286 (feat: create global errorHandler and implement custom error classes)
+=======
+app.use(routeNotFoundHandler);
+>>>>>>> 6f18cd4 (refactor: update to userId, authId, refactor routeNotFoundHandler, add password validation proper message)
 
 app.use(errorHandler);
 
