@@ -25,7 +25,8 @@ export class UserController {
     try {
       const users = await this.userService.getAllUsers();
       res.status(HttpStatus.OK).json(
-          ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.RETRIEVED));
+        ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.ALL_RETRIEVED)
+      );
     } catch (error) {
       next(error);
     }

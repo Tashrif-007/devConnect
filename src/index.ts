@@ -13,6 +13,7 @@ const app = express();
 
 app.use(express.json());
 app.use(`${VERSION}/users`, userRouter);
+app.use(`${VERSION}/stories`, storyRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
   const healthData = {
