@@ -1,14 +1,12 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import { AppDataSource } from './config/dataSource';
 import userRouter from './routes/userRoute';
 import { errorHandler } from './middlewares/errorHandler';
 import { routeNotFoundHandler } from './middlewares/routeNotFoundHandler';
 import { ResponseFormatter } from './utils/apiResponse';
 
-dotenv.config();
-const PORT = process.env.PORT || 3000;
-const VERSION = process.env.VERSION;
+const PORT = envValues.PORT || 3000;
+const VERSION = envValues.VERSION;
 const app = express();
 
 app.use(express.json());
