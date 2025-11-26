@@ -19,8 +19,13 @@ export const UpdateStorySchema = CreateStorySchema.partial().refine(
     { message: 'At least one field is required for update' },
 );
 
+export const StoryIdParamSchema = z.object({
+    storyId: z.uuidv4('Invalid story ID format'),
+});
+
 export type CreateStoryDTO = z.infer<typeof CreateStorySchema>;
 export type UpdateStoryDTO = z.infer<typeof UpdateStorySchema>;
+export type StoryIdParam = z.infer<typeof StoryIdParamSchema>;
 
 export interface StoryResponseDTO {
     storyId: string;

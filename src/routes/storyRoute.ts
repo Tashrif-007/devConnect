@@ -1,19 +1,39 @@
 import express from 'express';
 import { StoryController } from '../controllers/storyController';
-import { validateRequest } from '../middlewares/validateRequest';
-import { CreateStorySchema } from '../dto/storyDTO';
+import {
+    validateRequestBody,
+    validateRequestParams,
+} from '../middlewares/validateRequest';
+import {
+    CreateStorySchema,
+    UpdateStorySchema,
+    StoryIdParamSchema,
+} from '../dto/storyDTO';
 
 const storyRouter = express.Router();
 const storyController = new StoryController();
 
 storyRouter.post(
     '/',
-    validateRequest(CreateStorySchema),
+    validateRequestBody(CreateStorySchema),
     storyController.createStory,
 );
 storyRouter.get('/', storyController.getAllStories);
-storyRouter.get('/:storyId', storyController.getStoryById);
-storyRouter.put('/:storyId', storyController.updateStory);
-storyRouter.delete('/:storyId', storyController.deleteStory);
+storyRouter.get(
+    '/:storyId',
+    validateRequestParams(StoryIdParamSchema),
+    storyController.getStoryById,
+);
+storyRouter.put(
+    '/:storyId',
+    validateRequestParams(StoryIdParamSchema),
+    validateRequestBody(UpdateStorySchema),
+    storyController.updateStory,
+);
+storyRouter.delete(
+    '/:storyId',
+    validateRequestParams(StoryIdParamSchema),
+    storyController.deleteStory,
+);
 
 export default storyRouter;
