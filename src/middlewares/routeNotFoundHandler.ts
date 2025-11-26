@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ErrorFactory } from '../errors';
+import { ErrorFactory } from '../errors/errorFactory';
 
 /**
  * 404 handler for unmatched routes

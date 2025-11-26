@@ -2,9 +2,9 @@ import { UserRepository } from '../repositories/userRepository';
 import { CreateUserDTO, UpdateUserDTO, UserResponseDto } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { mapUserToResponseDto } from '../utils/userMapper';
-import { ErrorFactory } from '../errors';
 import { User } from '../entity/userEntity';
 import { UpdateResult } from 'typeorm';
+import { ErrorFactory } from '../errors/errorFactory';
 
 export class UserService {
   private userRepository: UserRepository;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError, ZodIssue } from 'zod';
-import { AppError, ValidationError, DatabaseError } from '../errors';
+import { AppError, ValidationError, DatabaseError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
 import { ResponseFormatter } from '../utils/apiResponse';
 
