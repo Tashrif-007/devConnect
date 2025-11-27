@@ -3,6 +3,7 @@ import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { SortDirection, UserOrderBy } from '../enums';
 import { UpdateResult } from 'typeorm';
+import { PaginationResult } from '../dto/paginationDTO';
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);

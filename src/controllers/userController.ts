@@ -4,6 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
+import { PaginatedResponse } from '../dto/paginationDTO';
 
 export class UserController {
     private userService: UserService;
@@ -12,25 +13,35 @@ export class UserController {
         this.userService = new UserService();
     }
 
-  createUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user: UserResponseDTO = await this.userService.createUser(req.body);
-      res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
-    } catch (error) {
-      next(error);
-    }
-  };
+    createUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user: UserResponseDTO = await this.userService.createUser(
+                req.body,
+            );
+            res.status(HttpStatus.CREATED).json(
+                ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 
-  getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users: UserResponseDTO[] = await this.userService.getAllUsers();
-      res.status(HttpStatus.OK).json(
-        ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.ALL_RETRIEVED)
-      );
-    } catch (error) {
-      next(error);
-    }
-  };
+    getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const page = parseInt(req.query.page as string);
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string);
+            const result: PaginatedResponse<UserResponseDTO> =
+                await this.userService.getAllUsers(page, itemsPerPage);
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    result,
+                    USER_RESPONSE_MESSAGES.ALL_RETRIEVED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 
     getUserById = async (req: Request, res: Response, next: NextFunction) => {
         try {
