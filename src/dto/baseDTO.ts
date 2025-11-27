@@ -1,13 +1,13 @@
 import { plainToClass, ClassConstructor } from 'class-transformer';
 
 export abstract class BaseResponseDTO {
-    static fromEntity<T>(this: ClassConstructor<T>, entity: any): T {
+    static fromEntity<T, E>(this: ClassConstructor<T>, entity: E): T {
         return plainToClass(this, entity, {
             excludeExtraneousValues: true,
         });
     }
 
-    static fromEntities<T>(this: ClassConstructor<T>, entities: any[]): T[] {
+    static fromEntities<T, E>(this: ClassConstructor<T>, entities: E[]): T[] {
         return entities.map((entity) =>
             plainToClass(this, entity, {
                 excludeExtraneousValues: true,
