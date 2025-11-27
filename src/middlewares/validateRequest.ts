@@ -1,6 +1,6 @@
 import { ZodType, ZodIssue } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { ErrorFactory } from '../errors';
+import { ErrorFactory } from '../errors/errorFactory';
 
 type RequestProperty = 'body' | 'params' | 'query';
 

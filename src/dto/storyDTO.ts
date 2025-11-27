@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { Exclude, Expose } from 'class-transformer';
+import { BaseResponseDTO } from './baseDTO';
 
 export const CreateStorySchema = z.object({
     title: z
@@ -14,10 +16,12 @@ export const CreateStorySchema = z.object({
     userId: z.uuidv4('Invalid user ID format'),
 });
 
-export const UpdateStorySchema = CreateStorySchema.partial().refine(
-    (data) => Object.keys(data).length > 0,
-    { message: 'At least one field is required for update' },
-);
+export const UpdateStorySchema = CreateStorySchema.omit({ userId: true })
+    .partial()
+    .strict()
+    .refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field is required for update',
+    });
 
 export const StoryIdParamSchema = z.object({
     storyId: z.uuidv4('Invalid story ID format'),
@@ -27,11 +31,23 @@ export type CreateStoryDTO = z.infer<typeof CreateStorySchema>;
 export type UpdateStoryDTO = z.infer<typeof UpdateStorySchema>;
 export type StoryIdParam = z.infer<typeof StoryIdParamSchema>;
 
-export interface StoryResponseDTO {
+@Exclude()
+export class StoryResponseDTO extends BaseResponseDTO {
+    @Expose()
     storyId: string;
+
+    @Expose()
     title: string;
+
+    @Expose()
     body: string;
+
+    @Expose()
     userId: string;
+
+    @Expose()
     createdAt: Date;
+
+    @Expose()
     updatedAt: Date;
 }

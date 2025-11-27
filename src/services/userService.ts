@@ -5,52 +5,55 @@ import { mapUserToResponseDto } from '../utils/userMapper';
 import { ConflictError, NotFoundError } from '../errors/errors';
 
 export class UserService {
-  private userRepository: UserRepository;
+    private userRepository: UserRepository;
 
-  constructor() {
-    this.userRepository = new UserRepository();
-  }
-
-  async createUser(userData: CreateUserDTO): Promise<UserResponseDto> {
-    const existingUserByUsername = await this.userRepository.findByUsername(
-      userData.username,
-    );
-    if (existingUserByUsername) {
-      throw new ConflictError(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
+    constructor() {
+        this.userRepository = new UserRepository();
     }
 
-    const existingUserByEmail = await this.userRepository.findByEmail(
-      userData.email,
-    );
-    if (existingUserByEmail) {
-      throw new ConflictError(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
-    }
+    async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {
+        const existingUserByUsername = await this.userRepository.findByUsername(
+            userData.username,
+        );
+        if (existingUserByUsername) {
+            throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
+        }
 
-    const user = await this.userRepository.create(userData);
-    return mapUserToResponseDto(user);
-  }
-  async getAllUsers(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.findAll();
-    return users.map((user) => mapUserToResponseDto(user));
-  }
-  async getUserById(userId: string): Promise<UserResponseDto> {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
-      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        const existingUserByEmail = await this.userRepository.findByEmail(
+            userData.email,
+        );
+        if (existingUserByEmail) {
+            throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
+        }
+
+        const user = await this.userRepository.create(userData);
+        return UserResponseDTO.fromEntity(user);
     }
-    return mapUserToResponseDto(user);
-  }
-  async updateUser(userId: string, userData: UpdateUserDTO): Promise<UserResponseDto> {
-    const user = await this.userRepository.update(userId, userData);
-    if (!user) {
-      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
+    async getAllUsers(): Promise<UserResponseDTO[]> {
+        const users = await this.userRepository.findAll();
+        return UserResponseDTO.fromEntities(users);
     }
-    return mapUserToResponseDto(user);
-  }
-  async deleteUser(userId: string): Promise<void> {
-    const result = await this.userRepository.softDelete(userId);
-    if (!result.affected || result.affected === 0) {
-      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
+    async getUserById(userId: string): Promise<UserResponseDTO> {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+        return UserResponseDTO.fromEntity(user);
     }
-  }
+    async updateUser(
+        userId: string,
+        userData: UpdateUserDTO,
+    ): Promise<UserResponseDTO> {
+        const user = await this.userRepository.update(userId, userData);
+        if (!user) {
+            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+        return UserResponseDTO.fromEntity(user);
+    }
+    async deleteUser(userId: string): Promise<void> {
+        const result = await this.userRepository.softDelete(userId);
+        if (!result.affected) {
+            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+    }
 }

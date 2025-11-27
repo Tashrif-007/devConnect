@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/Tashrif-007/devConnect#readme",
   "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "pg": "^8.16.3",

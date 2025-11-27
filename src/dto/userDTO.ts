@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { Exclude, Expose } from 'class-transformer';
 import { UserRole } from '../entity/userEntity';
+import { BaseResponseDTO } from './baseDTO';
 
 export const CreateUserSchema = z
     .object({
@@ -34,11 +36,23 @@ export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
 export type UserIdParam = z.infer<typeof UserIdParamSchema>;
 
-export interface UserResponseDto {
+@Exclude()
+export class UserResponseDTO extends BaseResponseDTO {
+    @Expose()
     userId: string;
+
+    @Expose()
     username: string;
+
+    @Expose()
     name: string;
+
+    @Expose()
     email: string;
+
+    @Expose()
     joinDate: Date;
+
+    @Expose()
     role: UserRole;
 }

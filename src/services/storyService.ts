@@ -4,9 +4,8 @@ import {
     StoryResponseDTO,
     UpdateStoryDTO,
 } from '../dto/storyDTO';
-import { mapStoryToResponseDTO } from '../utils/userMapper';
 import { Story } from '../entity/storyEntity';
-import { ErrorFactory } from '../errors';
+import { ErrorFactory } from '../errors/errorFactory';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 
 export class StoryService {
@@ -29,13 +28,13 @@ export class StoryService {
 
     async getAllStories(): Promise<StoryResponseDTO[]> {
         const stories = await this.storyRepository.findAll();
-        return stories.map((story) => mapStoryToResponseDTO(story));
+        return StoryResponseDTO.fromEntities(stories);
     }
 
     async getStoryById(storyId: string): Promise<StoryResponseDTO> {
         const story = await this.storyRepository.findById(storyId);
         this.ensureExists(story);
-        return mapStoryToResponseDTO(story!);
+        return StoryResponseDTO.fromEntity(story!);
     }
 
     async updateStory(storyId: string, storyData: UpdateStoryDTO) {
@@ -44,7 +43,7 @@ export class StoryService {
             storyData,
         );
         this.ensureExists(story);
-        return mapStoryToResponseDTO(story!);
+        return StoryResponseDTO.fromEntity(story!);
     }
 
     async deleteStory(storyId: string): Promise<void> {
