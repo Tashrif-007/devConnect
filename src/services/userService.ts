@@ -10,18 +10,10 @@ import {
 import { SortDirection, UserOrderBy } from '../enums';
 
 export class UserService {
-  private userRepository: UserRepository;
+    private userRepository: UserRepository;
 
-  constructor() {
-    this.userRepository = new UserRepository();
-  }
-
-  async createUser(userData: CreateUserDTO): Promise<UserResponseDto> {
-    const existingUserByUsername = await this.userRepository.findByUsername(
-      userData.username,
-    );
-    if (existingUserByUsername) {
-      throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
+    constructor() {
+        this.userRepository = new UserRepository();
     }
 
     async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {
