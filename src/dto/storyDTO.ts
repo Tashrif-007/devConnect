@@ -27,10 +27,6 @@ export const StoryIdParamSchema = z.object({
     storyId: z.uuidv4('Invalid story ID format'),
 });
 
-export const StoryIdParamSchema = z.object({
-    storyId: z.uuidv4('Invalid story ID format'),
-});
-
 export type CreateStoryDTO = z.infer<typeof CreateStorySchema>;
 export type UpdateStoryDTO = z.infer<typeof UpdateStorySchema>;
 export type StoryIdParam = z.infer<typeof StoryIdParamSchema>;
