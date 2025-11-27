@@ -7,6 +7,7 @@ import {
 import { Story } from '../entity/storyEntity';
 import { ErrorFactory } from '../errors/errorFactory';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
+import { PaginatedResponse, PaginationMeta } from '../dto/paginationDTO';
 
 export class StoryService {
     private storyRepository: StoryRepository;
@@ -26,9 +27,23 @@ export class StoryService {
         return this.storyRepository.create(storyData);
     }
 
-    async getAllStories(): Promise<StoryResponseDTO[]> {
-        const stories = await this.storyRepository.findAll();
-        return StoryResponseDTO.fromEntities(stories);
+    async getAllStories(
+        page: number,
+        itemsPerPage: number,
+    ): Promise<PaginatedResponse<StoryResponseDTO>> {
+        const result = await this.storyRepository.findAll(page, itemsPerPage);
+        const stories = StoryResponseDTO.fromEntities(result.data);
+
+        const totalPages = Math.ceil(result.total / itemsPerPage);
+        const pagination: PaginationMeta = {
+            currentPage: page,
+            itemsPerPage,
+            totalItems: result.total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        };
+        return { data: stories, pagination };
     }
 
     async getStoryById(storyId: string): Promise<StoryResponseDTO> {

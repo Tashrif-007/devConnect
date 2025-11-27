@@ -2,6 +2,7 @@ import { AppDataSource } from '../config/dataSource';
 import { Story } from '../entity/storyEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
+import { PaginationResult } from '../dto/paginationDTO';
 
 export class StoryRepository {
     private storyRepository = AppDataSource.getRepository(Story);
@@ -11,8 +12,14 @@ export class StoryRepository {
         return this.storyRepository.save(story);
     }
 
-    async findAll(): Promise<Story[]> {
-        return this.storyRepository.find();
+    async findAll(page: number, itemsPerPage: number): Promise<PaginationResult<Story>> {
+        const offset = (page - 1) * itemsPerPage;
+
+        const [data, total] = await this.storyRepository.findAndCount({
+            skip: offset,
+            take: itemsPerPage,
+        });
+        return { data, total };
     }
 
     async findById(storyId: string): Promise<Story | null> {

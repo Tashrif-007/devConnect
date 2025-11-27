@@ -29,10 +29,15 @@ export class StoryController {
 
     getAllStories = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const stories = await this.storyService.getAllStories();
+            const page = parseInt(req.query.page as string);
+            const itemsPerPage = parseInt(req.query.itemsPerPage as string);
+            const result = await this.storyService.getAllStories(
+                page,
+                itemsPerPage,
+            );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
-                    stories,
+                    result,
                     STORY_RESPONSE_MESSAGES.ALL_RETRIEVED,
                 ),
             );
@@ -76,7 +81,9 @@ export class StoryController {
     deleteStory = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.storyService.deleteStory(req.params.storyId);
-            res.status(HttpStatus.OK).json(ResponseFormatter.success(STORY_RESPONSE_MESSAGES.DELETED));
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(STORY_RESPONSE_MESSAGES.DELETED),
+            );
         } catch (error) {
             next(error);
         }

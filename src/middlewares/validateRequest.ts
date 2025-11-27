@@ -19,7 +19,15 @@ const validateRequest = (schema: ZodType, property: RequestProperty) => {
             return next(ErrorFactory.validation(errorMessages));
         }
 
-        req[property] = result.data;
+        if (property === 'query') {
+            const path = req.url.split('?')[0];
+            const queryString = new URLSearchParams(
+                result.data as Record<string, string>,
+            ).toString();
+            req.url = queryString ? `${path}?${queryString}` : path;
+        } else {
+            req[property] = result.data;
+        }
         next();
     };
 };

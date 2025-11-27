@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { UserRole } from '../entity/userEntity';
 import { BaseResponseDTO } from './baseDTO';
+import { PaginationMeta } from './paginationDTO';
 
 export const CreateUserSchema = z
     .object({
@@ -55,4 +56,8 @@ export class UserResponseDTO extends BaseResponseDTO {
 
     @Expose()
     role: UserRole;
+
+    @Expose()
+    @Type(() => Object)
+    pagination?: PaginationMeta;
 }

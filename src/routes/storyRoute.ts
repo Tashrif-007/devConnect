@@ -3,12 +3,14 @@ import { StoryController } from '../controllers/storyController';
 import {
     validateRequestBody,
     validateRequestParams,
+    validateRequestQuery,
 } from '../middlewares/validateRequest';
 import {
     CreateStorySchema,
     UpdateStorySchema,
     StoryIdParamSchema,
 } from '../dto/storyDTO';
+import { PaginationQuerySchema } from '../dto/paginationDTO';
 
 const storyRouter = express.Router();
 const storyController = new StoryController();
@@ -18,7 +20,11 @@ storyRouter.post(
     validateRequestBody(CreateStorySchema),
     storyController.createStory,
 );
-storyRouter.get('/', storyController.getAllStories);
+storyRouter.get(
+    '/',
+    validateRequestQuery(PaginationQuerySchema),
+    storyController.getAllStories,
+);
 storyRouter.get(
     '/:storyId',
     validateRequestParams(StoryIdParamSchema),

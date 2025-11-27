@@ -28,10 +28,27 @@ export class UserService {
         const user = await this.userRepository.create(userData);
         return UserResponseDTO.fromEntity(user);
     }
-    async getAllUsers(): Promise<UserResponseDTO[]> {
-        const users = await this.userRepository.findAll();
-        return UserResponseDTO.fromEntities(users);
+
+    async getAllUsers(
+        page: number,
+        itemsPerPage: number,
+    ): Promise<PaginatedResponse<UserResponseDTO>> {
+        const result = await this.userRepository.findAll(page, itemsPerPage);
+        const users = UserResponseDTO.fromEntities(result.data);
+
+        const totalPages = Math.ceil(result.total / itemsPerPage);
+        const pagination: PaginationMeta = {
+            currentPage: page,
+            itemsPerPage,
+            totalItems: result.total,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        };
+
+        return { data: users, pagination };
     }
+
     async getUserById(userId: string): Promise<UserResponseDTO> {
         const user = await this.userRepository.findById(userId);
         if (!user) {
