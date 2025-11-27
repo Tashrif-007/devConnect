@@ -16,11 +16,7 @@ export class UserController {
 
   createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-<<<<<<< HEAD
       const user: UserResponseDTO = await this.userService.createUser(req.body);
-=======
-      const user: UserResponseDto = await this.userService.createUser(req.body);
->>>>>>> 698861c (feat: create story endpoints and update schema to have deletedAt column)
       res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
     } catch (error) {
       next(error);
@@ -29,11 +25,7 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-<<<<<<< HEAD
       const users: UserResponseDTO[] = await this.userService.getAllUsers();
-=======
-      const users: UserResponseDto[] = await this.userService.getAllUsers();
->>>>>>> 698861c (feat: create story endpoints and update schema to have deletedAt column)
       res.status(HttpStatus.OK).json(
         ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.ALL_RETRIEVED)
       );
@@ -44,11 +36,7 @@ export class UserController {
 
   getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-<<<<<<< HEAD
       const user: UserResponseDTO = await this.userService.getUserById(req.params.userId);
-=======
-      const user: UserResponseDto = await this.userService.getUserById(req.params.userId);
->>>>>>> 698861c (feat: create story endpoints and update schema to have deletedAt column)
       res.status(HttpStatus.OK).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
       next(error);
