@@ -7,6 +7,7 @@ import { ResponseFormatter } from './utils/apiResponse';
 import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
 import { envValues } from './utils/envParser';
+import { ResponseFormatter } from './utils/apiResponse';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;

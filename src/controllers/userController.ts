@@ -32,8 +32,9 @@ export class UserController {
         try {
             const page = parseInt(req.query.page as string);
             const itemsPerPage = parseInt(req.query.itemsPerPage as string);
+            const find = req.query.find as string | undefined;
             const result: PaginatedResponse<UserResponseDTO> =
-                await this.userService.getAllUsers(page, itemsPerPage);
+                await this.userService.getAllUsers(page, itemsPerPage, find);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     result,

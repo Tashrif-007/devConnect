@@ -31,9 +31,11 @@ export class StoryController {
         try {
             const page = parseInt(req.query.page as string);
             const itemsPerPage = parseInt(req.query.itemsPerPage as string);
+            const find = req.query.find as string | undefined;
             const result = await this.storyService.getAllStories(
                 page,
                 itemsPerPage,
+                find,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(

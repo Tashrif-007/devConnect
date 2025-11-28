@@ -30,8 +30,11 @@ export class StoryService {
     async getAllStories(
         page: number,
         itemsPerPage: number,
+        searchTerm?: string,
     ): Promise<PaginatedResponse<StoryResponseDTO>> {
-        const result = await this.storyRepository.findAll(page, itemsPerPage);
+        const result = searchTerm
+            ? await this.storyRepository.search(searchTerm, page, itemsPerPage)
+            : await this.storyRepository.findAll(page, itemsPerPage);
         const stories = StoryResponseDTO.fromEntities(result.data);
 
         const totalPages = Math.ceil(result.total / itemsPerPage);

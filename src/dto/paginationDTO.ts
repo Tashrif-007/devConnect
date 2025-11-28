@@ -11,6 +11,7 @@ export const PaginationQuerySchema = z.object({
         .optional()
         .transform((val) => (val ? parseInt(val, 10) : 10))
         .pipe(z.number().int().min(1).max(100)),
+    find: z.string().trim().optional(),
 });
 
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;

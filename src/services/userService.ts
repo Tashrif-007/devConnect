@@ -2,6 +2,7 @@ import { UserRepository } from '../repositories/userRepository';
 import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
+import { PaginatedResponse, PaginationMeta } from '../dto/paginationDTO';
 
 export class UserService {
     private userRepository: UserRepository;
@@ -32,8 +33,11 @@ export class UserService {
     async getAllUsers(
         page: number,
         itemsPerPage: number,
+        searchTerm?: string,
     ): Promise<PaginatedResponse<UserResponseDTO>> {
-        const result = await this.userRepository.findAll(page, itemsPerPage);
+        const result = searchTerm
+            ? await this.userRepository.search(searchTerm, page, itemsPerPage)
+            : await this.userRepository.findAll(page, itemsPerPage);
         const users = UserResponseDTO.fromEntities(result.data);
 
         const totalPages = Math.ceil(result.total / itemsPerPage);
