@@ -54,6 +54,42 @@ export class StoryRepository {
         return { data, total };
     }
 
+    async search(
+        searchTerm: string,
+        page: number,
+        itemsPerPage: number,
+    ): Promise<PaginationResult<Story>> {
+        const offset = (page - 1) * itemsPerPage;
+        const similarityThreshold = 0.1; // 10% similarity threshold
+
+        const query = this.storyRepository
+            .createQueryBuilder('story')
+            .leftJoinAndSelect('story.user', 'user')
+            .where(
+                `(similarity(story.title, :searchTerm) > :threshold OR 
+                  similarity(story.body, :searchTerm) > :threshold OR 
+                  similarity(user.name, :searchTerm) > :threshold OR
+                  story.title ILIKE :ilikeTerm OR
+                  story.body ILIKE :ilikeTerm OR
+                  user.name ILIKE :ilikeTerm)`,
+                { searchTerm, threshold: similarityThreshold },
+            )
+            .addSelect(
+                `GREATEST(similarity(story.title, :searchTerm), similarity(story.body, :searchTerm), similarity(user.name, :searchTerm))`,
+                'similarity_score'
+            )
+            .addOrderBy('similarity_score', 'DESC')
+            .skip(offset)
+            .take(itemsPerPage)
+            .setParameter('searchTerm', searchTerm)
+            .setParameter('threshold', similarityThreshold)
+            .setParameter('ilikeTerm', `%${searchTerm}%`);
+
+        const [data, total] = await query.getManyAndCount();
+
+        return { data, total };
+    }
+
     async findById(storyId: string): Promise<Story | null> {
         return this.storyRepository.findOne({ where: { storyId } });
     }
