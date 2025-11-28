@@ -2,9 +2,7 @@ import { UserRepository } from '../repositories/userRepository';
 import { CreateUserDTO, UpdateUserDTO, UserResponseDto } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { mapUserToResponseDto } from '../utils/userMapper';
-import { User } from '../entity/userEntity';
-import { UpdateResult } from 'typeorm';
-import { ErrorFactory } from '../errors/errorFactory';
+import { ConflictError, NotFoundError } from '../errors/errors';
 
 export class UserService {
   private userRepository: UserRepository;
@@ -18,14 +16,14 @@ export class UserService {
       userData.username,
     );
     if (existingUserByUsername) {
-      throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
+      throw new ConflictError(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
     }
 
     const existingUserByEmail = await this.userRepository.findByEmail(
       userData.email,
     );
     if (existingUserByEmail) {
-      throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
+      throw new ConflictError(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
     }
 
     const user = await this.userRepository.create(userData);
@@ -38,21 +36,21 @@ export class UserService {
   async getUserById(userId: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
     }
     return mapUserToResponseDto(user);
   }
   async updateUser(userId: string, userData: UpdateUserDTO): Promise<UserResponseDto> {
     const user = await this.userRepository.update(userId, userData);
     if (!user) {
-      throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
     }
     return mapUserToResponseDto(user);
   }
   async deleteUser(userId: string): Promise<void> {
     const result = await this.userRepository.softDelete(userId);
     if (!result.affected || result.affected === 0) {
-      throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+      throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
     }
   }
 }

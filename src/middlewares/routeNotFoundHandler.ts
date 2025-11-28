@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ErrorFactory } from '../errors/errorFactory';
+import { NotFoundError } from '../errors/errors';
 
 /**
  * 404 handler for unmatched routes
@@ -11,6 +11,6 @@ export const routeNotFoundHandler = (
   next: NextFunction,
 ) => {
   next(
-    ErrorFactory.notFound(`Route not found: ${req.method} ${req.originalUrl}`),
+    new NotFoundError(`Route not found: ${req.method} ${req.originalUrl}`),
   );
 };
