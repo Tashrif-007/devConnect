@@ -4,7 +4,7 @@ import { User } from "./userEntity";
 @Entity({ name: "Auth" })
 export class Auth {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  authId: string;
 
   @Column()
   password: string;

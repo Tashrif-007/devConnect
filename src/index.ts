@@ -2,6 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { AppDataSource } from './config/dataSource';
 import userRouter from './routes/userRoute';
+import { errorHandler } from './middlewares/errorHandler';
+import { routeNotFoundHandler } from './middlewares/routeNotFoundHandler';
+import { ResponseFormatter } from './utils/apiResponse';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -12,16 +15,25 @@ app.use(express.json());
 app.use(`${VERSION}/users`, userRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
-    res.status(200).json({
-        status: "ok",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    })
-})
+  const healthData = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  };
+  res
+    .status(200)
+    .json(ResponseFormatter.success(healthData, 'Server is healthy'));
+});
 
-AppDataSource.initialize().then(() => {
+app.use(routeNotFoundHandler);
+
+app.use(errorHandler);
+
+AppDataSource.initialize()
+  .then(() => {
     console.log('Database connected');
     app.listen(PORT, () => {
       console.log(`Server running on ${PORT}`);
     });
-  }).catch((err) => console.log(err));
+  })
+  .catch((err) => console.log(err));

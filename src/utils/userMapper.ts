@@ -3,7 +3,7 @@ import { UserResponseDto } from '../dto/userDTO';
 
 export const mapUserToResponseDto = (user: User): UserResponseDto => {
   return {
-    id: user.id,
+    id: user.userId,
     username: user.username,
     name: user.name,
     email: user.email,
