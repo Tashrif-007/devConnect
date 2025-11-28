@@ -4,6 +4,8 @@ import userRouter from './routes/userRoute';
 import { errorHandler } from './middlewares/errorHandler';
 import { routeNotFoundHandler } from './middlewares/routeNotFoundHandler';
 import { ResponseFormatter } from './utils/apiResponse';
+import { envValues } from './utils/envParser';
+import storyRouter from './routes/storyRoute';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;

@@ -1,7 +1,6 @@
 import { UserRepository } from '../repositories/userRepository';
-import { CreateUserDTO, UpdateUserDTO, UserResponseDto } from '../dto/userDTO';
+import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
-import { mapUserToResponseDto } from '../utils/userMapper';
 import { ConflictError, NotFoundError } from '../errors/errors';
 
 export class UserService {
@@ -16,14 +15,14 @@ export class UserService {
             userData.username,
         );
         if (existingUserByUsername) {
-            throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
+            throw new ConflictError(USER_RESPONSE_MESSAGES.USERNAME_EXISTS);
         }
 
         const existingUserByEmail = await this.userRepository.findByEmail(
             userData.email,
         );
         if (existingUserByEmail) {
-            throw ErrorFactory.conflict(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
+            throw new ConflictError(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
         }
 
         const user = await this.userRepository.create(userData);
@@ -36,7 +35,7 @@ export class UserService {
     async getUserById(userId: string): Promise<UserResponseDTO> {
         const user = await this.userRepository.findById(userId);
         if (!user) {
-            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+            throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }
         return UserResponseDTO.fromEntity(user);
     }
@@ -46,14 +45,14 @@ export class UserService {
     ): Promise<UserResponseDTO> {
         const user = await this.userRepository.update(userId, userData);
         if (!user) {
-            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+            throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }
         return UserResponseDTO.fromEntity(user);
     }
     async deleteUser(userId: string): Promise<void> {
         const result = await this.userRepository.softDelete(userId);
         if (!result.affected) {
-            throw ErrorFactory.notFound(USER_RESPONSE_MESSAGES.NOT_FOUND);
+            throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }
     }
 }
