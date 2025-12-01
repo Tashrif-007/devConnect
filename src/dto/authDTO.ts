@@ -20,7 +20,6 @@ export const CreateAuthSchema = z.object({
         .max(new Date(), 'Password modification date cannot be in the future')
         .optional()
         .nullable(),
-
 });
 
 export const UpdateAuthSchema = CreateAuthSchema.partial().refine(

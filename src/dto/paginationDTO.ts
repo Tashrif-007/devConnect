@@ -3,7 +3,6 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { SortDirection, UserOrderBy, StoryOrderBy } from '../enums';
 import { BaseResponseDTO } from './baseDTO';
 
-// Generalized schema that accepts any orderBy enum value
 export const PaginationQuerySchema = z.object({
     page: z
         .string()
