@@ -34,3 +34,9 @@ export interface PaginatedResponse<T> {
     data: T[];
     pagination: PaginationMeta;
 }
+
+export interface PaginationRequestDTO {
+    page?: number;
+    itemsPerPage?: number;
+    searchTerm?: string;
+}

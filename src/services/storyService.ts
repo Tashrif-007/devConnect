@@ -7,7 +7,11 @@ import {
 import { Story } from '../entity/storyEntity';
 import { ErrorFactory } from '../errors/errorFactory';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
-import { PaginatedResponse, PaginationMeta } from '../dto/paginationDTO';
+import {
+    PaginatedResponse,
+    PaginationMeta,
+    PaginationRequestDTO,
+} from '../dto/paginationDTO';
 
 export class StoryService {
     private storyRepository: StoryRepository;
@@ -28,10 +32,12 @@ export class StoryService {
     }
 
     async getAllStories(
-        page: number,
-        itemsPerPage: number,
-        searchTerm?: string,
+        paginationDTO: PaginationRequestDTO,
     ): Promise<PaginatedResponse<StoryResponseDTO>> {
+        const page = paginationDTO.page || 1;
+        const itemsPerPage = paginationDTO.itemsPerPage || 10;
+        const searchTerm = paginationDTO.searchTerm;
+
         const result = searchTerm
             ? await this.storyRepository.search(searchTerm, page, itemsPerPage)
             : await this.storyRepository.findAll(page, itemsPerPage);

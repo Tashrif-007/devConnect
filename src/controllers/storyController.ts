@@ -4,6 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { CreateStoryDTO, StoryResponseDTO } from '../dto/storyDTO';
+import { PaginationRequestDTO } from '../dto/paginationDTO';
 
 export class StoryController {
     private storyService: StoryService;
@@ -29,14 +30,12 @@ export class StoryController {
 
     getAllStories = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const page = parseInt(req.query.page as string);
-            const itemsPerPage = parseInt(req.query.itemsPerPage as string);
-            const find = req.query.find as string | undefined;
-            const result = await this.storyService.getAllStories(
-                page,
-                itemsPerPage,
-                find,
-            );
+            const paginationDTO: PaginationRequestDTO = {
+                page: parseInt(req.query.page as string),
+                itemsPerPage: parseInt(req.query.itemsPerPage as string),
+                searchTerm: req.query.find as string | undefined,
+            };
+            const result = await this.storyService.getAllStories(paginationDTO);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     result,
