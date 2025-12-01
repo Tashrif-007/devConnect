@@ -4,6 +4,7 @@ import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { SortDirection, UserOrderBy } from '../enums';
 import { UpdateResult } from 'typeorm';
 import { PaginationResult } from '../dto/paginationDTO';
+import { SortDirection, UserOrderBy } from '../enums';
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
@@ -59,34 +60,25 @@ export class UserRepository {
     }
 
     async search(
-        searchTerm: string,
+        find: string,
         page: number,
         itemsPerPage: number,
+        sortBy: SortDirection = SortDirection.DESC,
+        orderBy: UserOrderBy = UserOrderBy.USER_ID,
     ): Promise<PaginationResult<User>> {
         const offset = (page - 1) * itemsPerPage;
-        const similarityThreshold = 0.1;
 
         const query = this.userRepository
             .createQueryBuilder('user')
             .where(
-                `(similarity(user.name, :searchTerm) > :threshold OR 
-                  similarity(user.email, :searchTerm) > :threshold OR 
-                  similarity(user.username, :searchTerm) > :threshold OR
-                  user.name ILIKE :ilikeTerm OR
-                  user.email ILIKE :ilikeTerm OR
-                  user.username ILIKE :ilikeTerm)`,
-                { searchTerm, threshold: similarityThreshold },
+                `user.name ILIKE :find
+                OR user.email ILIKE :find
+                OR user.username ILIKE :find`,
+                { find: `%${find}%` },
             )
-            .addSelect(
-                `GREATEST(similarity(user.name, :searchTerm), similarity(user.email, :searchTerm), similarity(user.username, :searchTerm))`,
-                'similarity_score',
-            )
-            .addOrderBy('similarity_score', 'DESC')
+            .orderBy(orderBy, sortBy)
             .skip(offset)
-            .take(itemsPerPage)
-            .setParameter('searchTerm', searchTerm)
-            .setParameter('threshold', similarityThreshold)
-            .setParameter('ilikeTerm', `%${searchTerm}%`);
+            .take(itemsPerPage);
 
         const [data, total] = await query.getManyAndCount();
 

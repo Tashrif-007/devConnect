@@ -58,35 +58,25 @@ export class StoryRepository {
         searchTerm: string,
         page: number,
         itemsPerPage: number,
+        sortBy: SortDirection = SortDirection.DESC,
+        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
     ): Promise<PaginationResult<Story>> {
         const offset = (page - 1) * itemsPerPage;
-        const similarityThreshold = 0.1; // 10% similarity threshold
 
         const query = this.storyRepository
             .createQueryBuilder('story')
             .leftJoinAndSelect('story.user', 'user')
             .where(
-                `(similarity(story.title, :searchTerm) > :threshold OR 
-                  similarity(story.body, :searchTerm) > :threshold OR 
-                  similarity(user.name, :searchTerm) > :threshold OR
-                  story.title ILIKE :ilikeTerm OR
-                  story.body ILIKE :ilikeTerm OR
-                  user.name ILIKE :ilikeTerm)`,
-                { searchTerm, threshold: similarityThreshold },
+                `story.title ILIKE :find
+                OR story.body ILIKE :find
+                OR user.name ILIKE :find`,
+                { find: `%${searchTerm}%` },
             )
-            .addSelect(
-                `GREATEST(similarity(story.title, :searchTerm), similarity(story.body, :searchTerm), similarity(user.name, :searchTerm))`,
-                'similarity_score'
-            )
-            .addOrderBy('similarity_score', 'DESC')
+            .orderBy(orderBy, sortBy)
             .skip(offset)
-            .take(itemsPerPage)
-            .setParameter('searchTerm', searchTerm)
-            .setParameter('threshold', similarityThreshold)
-            .setParameter('ilikeTerm', `%${searchTerm}%`);
+            .take(itemsPerPage);
 
         const [data, total] = await query.getManyAndCount();
-
         return { data, total };
     }
 

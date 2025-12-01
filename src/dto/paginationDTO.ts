@@ -3,6 +3,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { SortDirection, UserOrderBy, StoryOrderBy } from '../enums';
 import { BaseResponseDTO } from './baseDTO';
 
+// Generalized schema that accepts any orderBy enum value
 export const PaginationQuerySchema = z.object({
     page: z
         .string()
@@ -66,10 +67,4 @@ export function createPaginatedResponse<T>(
         hasPreviousPage: page > 1,
     };
     return new PaginatedResponseDTO(data, pagination);
-}
-
-export interface PaginationRequestDTO {
-    page?: number;
-    itemsPerPage?: number;
-    searchTerm?: string;
 }
