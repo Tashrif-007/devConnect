@@ -4,7 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
-import { PaginatedResponse, PaginationQuery } from '../dto/paginationDTO';
+import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 
 
 
@@ -32,7 +32,7 @@ export class UserController {
         try {
             const paginationQuery: PaginationQuery =
                 req.query as unknown as PaginationQuery;
-            const result: PaginatedResponse<UserResponseDTO> =
+            const result: PaginatedResponseDTO<UserResponseDTO> =
                 await this.userService.getAllUsers(paginationQuery);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(

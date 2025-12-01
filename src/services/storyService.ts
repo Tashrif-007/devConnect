@@ -8,9 +8,9 @@ import { Story } from '../entity/storyEntity';
 import { ErrorFactory } from '../errors/errorFactory';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import {
-    PaginatedResponse,
-    PaginationMeta,
+    PaginatedResponseDTO,
     PaginationQuery,
+    createPaginatedResponse,
 } from '../dto/paginationDTO';
 import { SortDirection, StoryOrderBy } from '../enums';
 
@@ -34,7 +34,7 @@ export class StoryService {
 
     async getAllStories(
         paginationDTO: PaginationQuery,
-    ): Promise<PaginatedResponse<StoryResponseDTO>> {
+    ): Promise<PaginatedResponseDTO<StoryResponseDTO>> {
         const page = paginationDTO.page || 1;
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
         const find = paginationDTO.find;
@@ -55,18 +55,14 @@ export class StoryService {
                   sortBy,
                   orderBy as StoryOrderBy,
               );
-        const stories = StoryResponseDTO.fromEntities(result.data);
 
-        const totalPages = Math.ceil(result.total / itemsPerPage);
-        const pagination: PaginationMeta = {
-            currentPage: page,
+        const stories = StoryResponseDTO.fromEntities(result.data);
+        return createPaginatedResponse(
+            stories,
+            result.total,
+            page,
             itemsPerPage,
-            totalItems: result.total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        };
-        return { data: stories, pagination };
+        );
     }
 
     async getStoryById(storyId: string): Promise<StoryResponseDTO> {

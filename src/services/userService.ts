@@ -3,9 +3,9 @@ import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
 import {
-    PaginatedResponse,
-    PaginationMeta,
+    PaginatedResponseDTO,
     PaginationQuery,
+    createPaginatedResponse,
 } from '../dto/paginationDTO';
 import { SortDirection, UserOrderBy } from '../enums';
 
@@ -37,7 +37,7 @@ export class UserService {
 
     async getAllUsers(
         paginationDTO: PaginationQuery,
-    ): Promise<PaginatedResponse<UserResponseDTO>> {
+    ): Promise<PaginatedResponseDTO<UserResponseDTO>> {
         const page = paginationDTO.page || 1;
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
         const find = paginationDTO.find;
@@ -58,19 +58,9 @@ export class UserService {
                   sortBy,
                   orderBy as UserOrderBy,
               );
+
         const users = UserResponseDTO.fromEntities(result.data);
-
-        const totalPages = Math.ceil(result.total / itemsPerPage);
-        const pagination: PaginationMeta = {
-            currentPage: page,
-            itemsPerPage,
-            totalItems: result.total,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1,
-        };
-
-        return { data: users, pagination };
+        return createPaginatedResponse(users, result.total, page, itemsPerPage);
     }
 
     async getUserById(userId: string): Promise<UserResponseDTO> {

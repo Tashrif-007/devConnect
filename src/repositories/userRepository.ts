@@ -2,7 +2,6 @@ import { AppDataSource } from '../config/dataSource';
 import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { UpdateResult } from 'typeorm';
-import { PaginationResult } from '../dto/paginationDTO';
 import { SortDirection, UserOrderBy } from '../enums';
 
 export class UserRepository {
@@ -18,7 +17,7 @@ export class UserRepository {
         itemsPerPage: number,
         sortBy: SortDirection = SortDirection.DESC,
         orderBy: UserOrderBy = UserOrderBy.USER_ID,
-    ): Promise<PaginationResult<User>> {
+    ): Promise<{ data: User[]; total: number }> {
         const offset = (page - 1) * itemsPerPage;
 
         const query = this.userRepository
@@ -38,7 +37,7 @@ export class UserRepository {
         itemsPerPage: number,
         sortBy: SortDirection = SortDirection.DESC,
         orderBy: UserOrderBy = UserOrderBy.USER_ID,
-    ): Promise<PaginationResult<User>> {
+    ): Promise<{ data: User[]; total: number }> {
         const offset = (page - 1) * itemsPerPage;
 
         const query = this.userRepository

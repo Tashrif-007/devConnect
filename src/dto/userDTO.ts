@@ -24,7 +24,7 @@ export const CreateUserSchema = z
     })
     .strict();
 
-export const UpdateUserSchema = CreateUserSchema.partial().refine(
+export const UpdateUserSchema = CreateUserSchema.omit({username: true, email: true}).partial().refine(
     (data) => Object.keys(data).length > 0,
     { message: 'At least one field is required for update' },
 );

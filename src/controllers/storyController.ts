@@ -4,7 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { CreateStoryDTO, StoryResponseDTO } from '../dto/storyDTO';
-import { PaginatedResponse, PaginationQuery } from '../dto/paginationDTO';
+import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 
 export class StoryController {
     private storyService: StoryService;
@@ -32,7 +32,7 @@ export class StoryController {
         try {
             const paginationQuery: PaginationQuery =
                 req.query as unknown as PaginationQuery;
-            const result: PaginatedResponse<StoryResponseDTO> =
+            const result: PaginatedResponseDTO<StoryResponseDTO> =
                 await this.storyService.getAllStories(paginationQuery);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(

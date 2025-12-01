@@ -2,7 +2,6 @@ import { AppDataSource } from '../config/dataSource';
 import { Story } from '../entity/storyEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
-import { PaginationResult } from '../dto/paginationDTO';
 import { SortDirection, StoryOrderBy } from '../enums';
 
 export class StoryRepository {
@@ -18,7 +17,7 @@ export class StoryRepository {
         itemsPerPage: number,
         sortBy: SortDirection = SortDirection.DESC,
         orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
-    ): Promise<PaginationResult<Story>> {
+    ): Promise<{ data: Story[]; total: number }> {
         const offset = (page - 1) * itemsPerPage;
 
         const query = this.storyRepository
@@ -38,7 +37,7 @@ export class StoryRepository {
         itemsPerPage: number,
         sortBy: SortDirection = SortDirection.DESC,
         orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
-    ): Promise<PaginationResult<Story>> {
+    ): Promise<{ data: Story[]; total: number }> {
         const offset = (page - 1) * itemsPerPage;
 
         const query = this.storyRepository
