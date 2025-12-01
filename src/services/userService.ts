@@ -5,8 +5,9 @@ import { ConflictError, NotFoundError } from '../errors/errors';
 import {
     PaginatedResponse,
     PaginationMeta,
-    PaginationRequestDTO,
+    PaginationQuery,
 } from '../dto/paginationDTO';
+import { SortDirection, UserOrderBy } from '../enums';
 
 export class UserService {
     private userRepository: UserRepository;
@@ -35,15 +36,28 @@ export class UserService {
     }
 
     async getAllUsers(
-        paginationDTO: PaginationRequestDTO,
+        paginationDTO: PaginationQuery,
     ): Promise<PaginatedResponse<UserResponseDTO>> {
         const page = paginationDTO.page || 1;
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
-        const searchTerm = paginationDTO.searchTerm;
+        const find = paginationDTO.find;
+        const sortBy = paginationDTO.sortBy || SortDirection.DESC;
+        const orderBy = paginationDTO.orderBy || UserOrderBy.USER_ID;
 
-        const result = searchTerm
-            ? await this.userRepository.search(searchTerm, page, itemsPerPage)
-            : await this.userRepository.findAll(page, itemsPerPage);
+        const result = find
+            ? await this.userRepository.search(
+                  find,
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as UserOrderBy,
+              )
+            : await this.userRepository.findAll(
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as UserOrderBy,
+              );
         const users = UserResponseDTO.fromEntities(result.data);
 
         const totalPages = Math.ceil(result.total / itemsPerPage);

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { UserRole } from '../entity/userEntity';
+import { UserRole } from '../enums/index';
 import { BaseResponseDTO } from './baseDTO';
 import { PaginationMeta } from './paginationDTO';
 

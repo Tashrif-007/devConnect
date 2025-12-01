@@ -10,8 +10,9 @@ import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import {
     PaginatedResponse,
     PaginationMeta,
-    PaginationRequestDTO,
+    PaginationQuery,
 } from '../dto/paginationDTO';
+import { SortDirection, StoryOrderBy } from '../enums';
 
 export class StoryService {
     private storyRepository: StoryRepository;
@@ -32,15 +33,28 @@ export class StoryService {
     }
 
     async getAllStories(
-        paginationDTO: PaginationRequestDTO,
+        paginationDTO: PaginationQuery,
     ): Promise<PaginatedResponse<StoryResponseDTO>> {
         const page = paginationDTO.page || 1;
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
-        const searchTerm = paginationDTO.searchTerm;
+        const find = paginationDTO.find;
+        const sortBy = paginationDTO.sortBy || SortDirection.DESC;
+        const orderBy = paginationDTO.orderBy || StoryOrderBy.CREATED_AT;
 
-        const result = searchTerm
-            ? await this.storyRepository.search(searchTerm, page, itemsPerPage)
-            : await this.storyRepository.findAll(page, itemsPerPage);
+        const result = find
+            ? await this.storyRepository.search(
+                  find,
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as StoryOrderBy,
+              )
+            : await this.storyRepository.findAll(
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as StoryOrderBy,
+              );
         const stories = StoryResponseDTO.fromEntities(result.data);
 
         const totalPages = Math.ceil(result.total / itemsPerPage);
