@@ -20,6 +20,13 @@ export const USER_RESPONSE_MESSAGES = {
 
 export const STORY_RESPONSE_MESSAGES = createResourceMessages('Story');
 
+export const AUTH_RESPONSE_MESSAGES = {
+    SIGNUP_SUCCESS: 'User registered successfully',
+    LOGIN_SUCCESS: 'Login successful',
+    INVALID_CREDENTIALS: 'Invalid email or password',
+    PASSWORD_NOT_MATCHED: 'Password and confirm password does not match',
+};
+
 export const ERROR_MESSAGES = {
     CONFLICT: 'Resource Conflict',
     DATABASE_FAILED: 'Database operation failed',

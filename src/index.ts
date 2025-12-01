@@ -8,6 +8,7 @@ import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
 import { envValues } from './utils/envParser';
 import { ResponseFormatter } from './utils/apiResponse';
+import authRouter from './routes/authRoute';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
@@ -16,6 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(`${VERSION}/users`, userRouter);
 app.use(`${VERSION}/stories`, storyRouter);
+app.use(`${VERSION}/auth`, authRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
   const healthData = {

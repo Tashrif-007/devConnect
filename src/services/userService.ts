@@ -8,6 +8,7 @@ import {
     createPaginatedResponse,
 } from '../dto/paginationDTO';
 import { SortDirection, UserOrderBy } from '../enums';
+import { User } from '../entity/userEntity';
 
 export class UserService {
     private userRepository: UserRepository;
@@ -85,5 +86,8 @@ export class UserService {
         if (!result.affected) {
             throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }
+    }
+    async getUserByEmail(email: string): Promise<User | null> {
+        return this.userRepository.findByEmail(email);
     }
 }
