@@ -67,3 +67,9 @@ export function createPaginatedResponse<T>(
     };
     return new PaginatedResponseDTO(data, pagination);
 }
+
+export interface PaginationRequestDTO {
+    page?: number;
+    itemsPerPage?: number;
+    searchTerm?: string;
+}

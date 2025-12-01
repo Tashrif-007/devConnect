@@ -4,7 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
-import { PaginatedResponse } from '../dto/paginationDTO';
+import { PaginatedResponse, PaginationRequestDTO } from '../dto/paginationDTO';
 
 export class UserController {
     private userService: UserService;
@@ -28,11 +28,13 @@ export class UserController {
 
     getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const page = parseInt(req.query.page as string);
-            const itemsPerPage = parseInt(req.query.itemsPerPage as string);
-            const find = req.query.find as string | undefined;
+            const paginationDTO: PaginationRequestDTO = {
+                page: parseInt(req.query.page as string),
+                itemsPerPage: parseInt(req.query.itemsPerPage as string),
+                searchTerm: req.query.find as string | undefined,
+            };
             const result: PaginatedResponse<UserResponseDTO> =
-                await this.userService.getAllUsers(page, itemsPerPage, find);
+                await this.userService.getAllUsers(paginationDTO);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     result,
