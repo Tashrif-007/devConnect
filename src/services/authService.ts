@@ -1,11 +1,16 @@
 import { AuthRepository } from '../repositories/authRepository';
-import { SignupDTO, AuthResponseDTO, LoginDTO } from '../dto/authDTO';
+import {
+    SignupDTO,
+    AuthResponseDTO,
+    LoginDTO,
+    jwtPayload
+} from '../dto/authDTO';
 import { envValues } from '../utils/envParser';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from './userService';
 import { ConflictError, UnauthorizedError } from '../errors/errors';
-import { AUTH_RESPONSE_MESSAGES } from '../constants/messages';
+import { AUTH_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
 
 export class AuthService {
     private authRepository: AuthRepository;
@@ -52,18 +57,18 @@ export class AuthService {
             auth!.password,
         );
         if (!isValidPassword) {
-            throw new UnauthorizedError('wrong pass');
+            throw new UnauthorizedError(ERROR_MESSAGES.VALIDATION_FAILED);
         }
-        const token = jwt.sign(
-            {
-                userId: user?.userId,
-                email: user?.email,
-                username: user?.username,
-                role: user?.role,
-            },
-            this.jwtSecret,
-            { expiresIn: '30d' },
-        );
+
+        const jwtPayload: jwtPayload = {
+            userId: user!.userId,
+            email: user!.email,
+            username: user!.username,
+            role: user!.role,
+        };
+        const token = jwt.sign(jwtPayload, this.jwtSecret, {
+            expiresIn: '30d',
+        });
 
         return {
             token,

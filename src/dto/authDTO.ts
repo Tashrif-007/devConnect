@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Exclude, Expose } from 'class-transformer';
 import { UserRole } from '../enums/index';
 import { BaseResponseDTO } from './baseDTO';
+import { JwtPayload } from 'jsonwebtoken';
 
 const passwordSchema = z
     .string({ message: 'Password is required' })
@@ -58,6 +59,13 @@ export type LoginDTO = z.infer<typeof LoginSchema>;
 export interface authDTO {
     userId: string;
     hashedPassword: string;
+}
+
+export interface jwtPayload extends JwtPayload {
+    userId: string;
+    email: string;
+    username: string;
+    role: UserRole;
 }
 
 @Exclude()

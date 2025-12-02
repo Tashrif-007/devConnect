@@ -5,6 +5,7 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
+import { authenticatedRequest } from '../middlewares/authentication';
 
 export class UserController {
     private userService: UserService;

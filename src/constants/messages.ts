@@ -33,7 +33,11 @@ export const ERROR_MESSAGES = {
     ACCESS_FORBIDDEN: 'Access forbidden',
     RESOURCE_NOT_FOUND: 'Resource not found',
     UNAUTHORIZED: 'Unauthorized access',
-    VALIDATION_FAILED: 'Validation failed',
+    HEADER_MISSING: 'Authorized header is missing',
+    INVALID_HEADER: 'Invalid auth header',
+    TOKEN_MISSING: 'Auth token missing',
+    VALIDATION_FAILED: 'Invalid password',
+    INVALID_TOKEN: 'Token invalid',
     SERVER_ERROR: 'Internal Server Error',
 } as const;
 

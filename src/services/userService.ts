@@ -7,7 +7,7 @@ import {
     PaginationQuery,
     createPaginatedResponse,
 } from '../dto/paginationDTO';
-import { SortDirection, UserOrderBy } from '../enums';
+import { SortDirection, UserOrderBy, UserRole } from '../enums';
 import { User } from '../entity/userEntity';
 
 export class UserService {

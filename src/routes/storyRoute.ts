@@ -11,6 +11,11 @@ import {
     StoryIdParamSchema,
 } from '../dto/storyDTO';
 import { PaginationQuerySchema } from '../dto/paginationDTO';
+import { authentication } from '../middlewares/authentication';
+import {
+    creationAuthorization,
+    updateDeleteAuthorization,
+} from '../middlewares/authorization';
 
 const storyRouter = express.Router();
 const storyController = new StoryController();
@@ -18,6 +23,8 @@ const storyController = new StoryController();
 storyRouter.post(
     '/',
     validateRequestBody(CreateStorySchema),
+    authentication(),
+    creationAuthorization(),
     storyController.createStory,
 );
 storyRouter.get(
@@ -34,11 +41,15 @@ storyRouter.put(
     '/:storyId',
     validateRequestParams(StoryIdParamSchema),
     validateRequestBody(UpdateStorySchema),
+    authentication(),
+    updateDeleteAuthorization(),
     storyController.updateStory,
 );
 storyRouter.delete(
     '/:storyId',
     validateRequestParams(StoryIdParamSchema),
+    authentication(),
+    updateDeleteAuthorization(),
     storyController.deleteStory,
 );
 
