@@ -5,7 +5,6 @@ import {
     UpdateStoryDTO,
 } from '../dto/storyDTO';
 import { Story } from '../entity/storyEntity';
-import { ErrorFactory } from '../errors/errorFactory';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import {
     PaginatedResponseDTO,
@@ -13,6 +12,7 @@ import {
     createPaginatedResponse,
 } from '../dto/paginationDTO';
 import { SortDirection, StoryOrderBy } from '../enums';
+import { NotFoundError } from '../errors/errors';
 
 export class StoryService {
     private storyRepository: StoryRepository;
@@ -23,7 +23,7 @@ export class StoryService {
 
     private ensureExists(story: Story | null): Story {
         if (!story) {
-            throw ErrorFactory.notFound(STORY_RESPONSE_MESSAGES.NOT_FOUND);
+            throw new NotFoundError(STORY_RESPONSE_MESSAGES.NOT_FOUND);
         }
         return story;
     }
@@ -83,7 +83,7 @@ export class StoryService {
     async deleteStory(storyId: string): Promise<void> {
         const result = await this.storyRepository.softDelete(storyId);
         if (!result.affected) {
-            throw ErrorFactory.notFound(STORY_RESPONSE_MESSAGES.NOT_FOUND);
+            throw new NotFoundError(STORY_RESPONSE_MESSAGES.NOT_FOUND);
         }
     }
 }

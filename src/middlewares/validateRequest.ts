@@ -1,6 +1,6 @@
 import { ZodType, ZodIssue } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { ErrorFactory } from '../errors/errorFactory';
+import { ValidationError } from '../errors/errors';
 
 type RequestProperty = 'body' | 'params' | 'query';
 
@@ -16,7 +16,7 @@ const validateRequest = (schema: ZodType, property: RequestProperty) => {
                 )
                 .join(', ');
 
-            return next(ErrorFactory.validation(errorMessages));
+            return next(new ValidationError(errorMessages));
         }
 
         if (property === 'query') {
