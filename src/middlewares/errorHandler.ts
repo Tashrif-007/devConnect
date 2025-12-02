@@ -3,6 +3,7 @@ import { ZodError, ZodIssue } from 'zod';
 import { AppError, ValidationError, DatabaseError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
 import { ResponseFormatter } from '../utils/apiResponse';
+import { envValues } from '../utils/envParser';
 
 export const errorHandler = (
   err: Error,
@@ -10,6 +11,8 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
+  const isDevelopment = envValues.NODE_ENV === "development";
+
   console.error('Error:', {
     message: err.message,
     stack: err.stack,
@@ -30,7 +33,7 @@ export const errorHandler = (
     const response = {
       ...ResponseFormatter.error(validationError.message),
       errors: validationErrors,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+      ...(isDevelopment && { stack: err.stack }),
     };
 
     return res.status(validationError.statusCode).json(response);
@@ -39,7 +42,7 @@ export const errorHandler = (
   if (err instanceof AppError) {
     const response = {
       ...ResponseFormatter.error(err.message),
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+      ...(isDevelopment && { stack: err.stack }),
     };
 
     return res.status(err.statusCode).json(response);
@@ -50,7 +53,7 @@ export const errorHandler = (
 
     const response = {
       ...ResponseFormatter.error(dbError.message),
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+      ...(isDevelopment && { stack: err.stack }),
     };
 
     return res.status(dbError.statusCode).json(response);
@@ -58,7 +61,7 @@ export const errorHandler = (
 
   const response = {
     ...ResponseFormatter.error(ERROR_MESSAGES.SERVER_ERROR),
-    ...(process.env.NODE_ENV === 'development' && {
+    ...(isDevelopment && {
       details: err.message,
       stack: err.stack,
     }),

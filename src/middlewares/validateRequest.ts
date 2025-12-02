@@ -1,17 +1,37 @@
-import { ZodSchema } from 'zod';
+import { ZodType, ZodIssue } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { HttpStatus } from '../constants/httpStatus';
-import { ResponseFormatter } from '../utils/apiResponse';
-import { VALIDATION_MESSAGES } from '../constants/messages';
+import { ErrorFactory } from '../errors/errorFactory';
 
-export const validateRequest = (schema: ZodSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+type RequestProperty = 'body' | 'params' | 'query';
 
-    if(!result.success) {
-      return res.status(HttpStatus.BAD_REQUEST).json(ResponseFormatter.error(VALIDATION_MESSAGES.VALIDATION_FAILED));
-    }
-    req.body = result.data;
-    next();
-  };
+const validateRequest = (schema: ZodType, property: RequestProperty) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const result = schema.safeParse(req[property]);
+
+        if (!result.success) {
+            const errorMessages = result.error.issues
+                .map(
+                    (issue: ZodIssue) =>
+                        `${issue.path.join('.')}: ${issue.message}`,
+                )
+                .join(', ');
+
+            return next(ErrorFactory.validation(errorMessages));
+        }
+
+        req[property] = result.data;
+        next();
+    };
+};
+
+export const validateRequestBody = (schema: ZodType) => {
+    return validateRequest(schema, 'body');
+};
+
+export const validateRequestParams = (schema: ZodType) => {
+    return validateRequest(schema, 'params');
+};
+
+export const validateRequestQuery = (schema: ZodType) => {
+    return validateRequest(schema, 'query');
 };

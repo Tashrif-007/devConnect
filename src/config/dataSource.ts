@@ -2,17 +2,17 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { User } from '../entity/userEntity';
 import { Auth } from '../entity/authEntity';
-import dotenv from 'dotenv';
+import { Story } from '../entity/storyEntity';
+import { envValues } from '../utils/envParser';
 
-dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST,
-  password: process.env.DB_PASSWORD,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USER,
-  database: process.env.DB_DB,
+  host: envValues.DB_HOST,
+  password: envValues.DB_PASSWORD,
+  port: Number(envValues.DB_PORT),
+  username: envValues.DB_USER,
+  database: envValues.DB_DB,
   synchronize: true,
-  entities: [User, Auth],
+  entities: [User, Auth, Story],
 });

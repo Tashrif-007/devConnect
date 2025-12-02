@@ -3,7 +3,7 @@ import { UserService } from '../services/userService';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
-import { UserResponseDto } from '../dto/userDTO';
+import { UserResponseDTO } from '../dto/userDTO';
 
 export class UserController {
   private userService: UserService;
@@ -14,7 +14,7 @@ export class UserController {
 
   createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.userService.createUser(req.body);
+      const user: UserResponseDTO = await this.userService.createUser(req.body);
       res.status(HttpStatus.CREATED).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.CREATED));
     } catch (error) {
       next(error);
@@ -23,9 +23,10 @@ export class UserController {
 
   getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await this.userService.getAllUsers();
+      const users: UserResponseDTO[] = await this.userService.getAllUsers();
       res.status(HttpStatus.OK).json(
-          ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.RETRIEVED));
+        ResponseFormatter.success(users, USER_RESPONSE_MESSAGES.ALL_RETRIEVED)
+      );
     } catch (error) {
       next(error);
     }
@@ -33,7 +34,7 @@ export class UserController {
 
   getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.userService.getUserById(req.params.userId);
+      const user: UserResponseDTO = await this.userService.getUserById(req.params.userId);
       res.status(HttpStatus.OK).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.RETRIEVED));
     } catch (error) {
       next(error);
@@ -42,7 +43,7 @@ export class UserController {
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user: UserResponseDto = await this.userService.updateUser(req.params.userId, req.body);
+      const user: UserResponseDTO = await this.userService.updateUser(req.params.userId, req.body);
       res.status(HttpStatus.OK).json(ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED));
     } catch (error) {
       next(error);
