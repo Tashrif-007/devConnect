@@ -54,32 +54,6 @@ export class StoryRepository {
         return { data, total };
     }
 
-    async search(
-        searchTerm: string,
-        page: number,
-        itemsPerPage: number,
-        sortBy: SortDirection = SortDirection.DESC,
-        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
-    ): Promise<PaginationResult<Story>> {
-        const offset = (page - 1) * itemsPerPage;
-
-        const query = this.storyRepository
-            .createQueryBuilder('story')
-            .leftJoinAndSelect('story.user', 'user')
-            .where(
-                `story.title ILIKE :find
-                OR story.body ILIKE :find
-                OR user.name ILIKE :find`,
-                { find: `%${searchTerm}%` },
-            )
-            .orderBy(orderBy, sortBy)
-            .skip(offset)
-            .take(itemsPerPage);
-
-        const [data, total] = await query.getManyAndCount();
-        return { data, total };
-    }
-
     async findById(storyId: string): Promise<Story | null> {
         return this.storyRepository.findOne({ where: { storyId } });
     }

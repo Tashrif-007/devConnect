@@ -2,8 +2,7 @@ import { AppDataSource } from '../config/dataSource';
 import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { SortDirection, UserOrderBy } from '../enums';
-import { UpdateResult } from 'typeorm';
-import { SortDirection, UserOrderBy } from '../enums';
+import { EntityManager, UpdateResult } from 'typeorm';
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
@@ -40,32 +39,6 @@ export class UserRepository {
         sortBy: SortDirection = SortDirection.DESC,
         orderBy: UserOrderBy = UserOrderBy.USER_ID,
     ): Promise<{ data: User[]; total: number }> {
-        const offset = (page - 1) * itemsPerPage;
-
-        const query = this.userRepository
-            .createQueryBuilder('user')
-            .where(
-                `user.name ILIKE :find
-                OR user.email ILIKE :find
-                OR user.username ILIKE :find`,
-                { find: `%${find}%` },
-            )
-            .orderBy(orderBy, sortBy)
-            .skip(offset)
-            .take(itemsPerPage);
-
-        const [data, total] = await query.getManyAndCount();
-
-        return { data, total };
-    }
-
-    async search(
-        find: string,
-        page: number,
-        itemsPerPage: number,
-        sortBy: SortDirection = SortDirection.DESC,
-        orderBy: UserOrderBy = UserOrderBy.USER_ID,
-    ): Promise<PaginationResult<User>> {
         const offset = (page - 1) * itemsPerPage;
 
         const query = this.userRepository
