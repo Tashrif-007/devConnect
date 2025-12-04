@@ -43,12 +43,9 @@ export class StoryRepository {
         const query = this.storyRepository
             .createQueryBuilder('story')
             .leftJoinAndSelect('story.user', 'user')
-            .where(
-                `story.title ILIKE :find
-                OR story.body ILIKE :find
-                OR user.name ILIKE :find`,
-                { find: `%${searchTerm}%` },
-            )
+            .where('story.title ILIKE :find', { find: `%${searchTerm}%` })
+            .orWhere('story.body ILIKE :find', { find: `%${searchTerm}%` })
+            .orWhere('user.name ILIKE :find', { find: `%${searchTerm}%` })
             .orderBy(orderBy, sortBy)
             .skip(offset)
             .take(itemsPerPage);
