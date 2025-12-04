@@ -24,10 +24,21 @@ export const CreateUserSchema = z
     })
     .strict();
 
-export const UpdateUserSchema = CreateUserSchema.omit({username: true, email: true}).partial().refine(
-    (data) => Object.keys(data).length > 0,
-    { message: 'At least one field is required for update' },
-);
+export const UpdateUserSchema = CreateUserSchema.omit({
+    username: true,
+    email: true,
+    role: true,
+})
+    .partial()
+    .refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field is required for update',
+    });
+
+export const UpdateRoleSchema = z.object({
+    role: z.enum(UserRole, {
+        message: 'Role must be either ADMIN or USER',
+    }),
+});
 
 export const UserIdParamSchema = z.object({
     userId: z.uuidv4('Invalid user ID format'),
@@ -35,6 +46,7 @@ export const UserIdParamSchema = z.object({
 
 export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
+export type UpdateRoleDTO = z.infer<typeof UpdateRoleSchema>;
 export type UserIdParam = z.infer<typeof UserIdParamSchema>;
 
 @Exclude()

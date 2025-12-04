@@ -3,7 +3,7 @@ import {
     SignupDTO,
     AuthResponseDTO,
     LoginDTO,
-    jwtPayload
+    jwtPayload,
 } from '../dto/authDTO';
 import { envValues } from '../utils/envParser';
 import bcrypt from 'bcrypt';
@@ -28,25 +28,26 @@ export class AuthService {
     }
 
     async signup(signupData: SignupDTO) {
-        if (signupData.password !== signupData.confirmPassword) {
-            throw new ConflictError(
-                AUTH_RESPONSE_MESSAGES.PASSWORD_NOT_MATCHED,
-            );
-        }
-        const hashedPassword = await bcrypt.hash(signupData.password, 10);
+        return await AppDataSource.transaction(async (entityManager) => {
+            if (signupData.password !== signupData.confirmPassword) {
+                throw new ConflictError(
+                    AUTH_RESPONSE_MESSAGES.PASSWORD_NOT_MATCHED,
+                );
+            }
+            const hashedPassword = await bcrypt.hash(signupData.password, 10);
 
-        const user = await this.userService.createUser({
-            username: signupData.username,
-            name: signupData.name,
-            email: signupData.email,
+            const user = await this.userService.createUser({
+                username: signupData.username,
+                name: signupData.name,
+                email: signupData.email,
+            }, entityManager);
+
+            await this.authRepository.create({
+                userId: user.userId,
+                hashedPassword,
+            });
+            return AuthResponseDTO.fromEntity(user);
         });
-
-        await this.authRepository.create({
-            userId: user.userId,
-            hashedPassword,
-        });
-
-        return AuthResponseDTO.fromEntity(user);
     }
 
     async login(loginData: LoginDTO) {

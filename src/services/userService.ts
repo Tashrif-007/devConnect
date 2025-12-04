@@ -9,15 +9,22 @@ import {
 } from '../dto/paginationDTO';
 import { SortDirection, UserOrderBy, UserRole } from '../enums';
 import { User } from '../entity/userEntity';
+import { StoryService } from './storyService';
+import { EntityManager } from 'typeorm';
 
 export class UserService {
     private userRepository: UserRepository;
+    private storyService: StoryService;
 
     constructor() {
         this.userRepository = new UserRepository();
+        this.storyService = new StoryService();
     }
 
-    async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {
+    async createUser(
+        userData: CreateUserDTO,
+        entityManager?: EntityManager,
+    ): Promise<UserResponseDTO> {
         const existingUserByUsername = await this.userRepository.findByUsername(
             userData.username,
         );
@@ -32,7 +39,7 @@ export class UserService {
             throw new ConflictError(USER_RESPONSE_MESSAGES.EMAIL_EXISTS);
         }
 
-        const user = await this.userRepository.create(userData);
+        const user = await this.userRepository.create(userData, entityManager);
         return UserResponseDTO.fromEntity(user);
     }
 
@@ -76,6 +83,17 @@ export class UserService {
         userData: UpdateUserDTO,
     ): Promise<UserResponseDTO> {
         const user = await this.userRepository.update(userId, userData);
+        if (!user) {
+            throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+        return UserResponseDTO.fromEntity(user);
+    }
+
+    async updateUserRole(
+        userId: string,
+        role: UserRole,
+    ): Promise<UserResponseDTO> {
+        const user = await this.userRepository.update(userId, { role } as any);
         if (!user) {
             throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }

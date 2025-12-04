@@ -74,6 +74,20 @@ export class UserController {
         }
     };
 
+    updateRole = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user: UserResponseDTO = await this.userService.updateUser(
+                req.params.userId,
+                req.body.role,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
     deleteUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.userService.deleteUser(req.params.userId);

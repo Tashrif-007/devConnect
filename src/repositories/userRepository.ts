@@ -8,8 +8,9 @@ import { SortDirection, UserOrderBy } from '../enums';
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
 
-    async create(userData: CreateUserDTO): Promise<User> {
-        const user = this.userRepository.create(userData);
+    async create(userData: CreateUserDTO, entityManager?: EntityManager): Promise<User> {
+        const manager = entityManager || this.userRepository.manager;
+        const user = manager.create(User, userData);
         return this.userRepository.save(user);
     }
 

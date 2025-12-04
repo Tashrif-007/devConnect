@@ -3,6 +3,7 @@ import { authenticatedRequest } from './authentication';
 import { ForbiddenError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
 import { StoryService } from '../services/storyService';
+import { UserRole } from '../enums';
 
 export const checkRequiredRoles = (allowedRoles: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
