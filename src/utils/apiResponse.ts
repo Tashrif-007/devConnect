@@ -1,4 +1,4 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   message?: string;
@@ -14,7 +14,7 @@ export class ResponseFormatter {
     };
   }
 
-  static error(error: string, message?: string): ApiResponse {
+  static error<T>(error: string, message?: string): ApiResponse<T> {
     return {
       success: false,
       error,

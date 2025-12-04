@@ -1,6 +1,6 @@
 import { ZodType, ZodIssue } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { ErrorFactory } from '../errors/errorFactory';
+import { ValidationError } from '../errors/errors';
 
 type RequestProperty = 'body' | 'params' | 'query';
 
@@ -16,10 +16,18 @@ const validateRequest = (schema: ZodType, property: RequestProperty) => {
                 )
                 .join(', ');
 
-            return next(ErrorFactory.validation(errorMessages));
+            return next(new ValidationError(errorMessages));
         }
 
-        req[property] = result.data;
+        if (property === 'query') {
+            const path = req.url.split('?')[0];
+            const queryString = new URLSearchParams(
+                result.data as Record<string, string>,
+            ).toString();
+            req.url = queryString ? `${path}?${queryString}` : path;
+        } else {
+            req[property] = result.data;
+        }
         next();
     };
 };

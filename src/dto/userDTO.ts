@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { Exclude, Expose } from 'class-transformer';
-import { UserRole } from '../entity/userEntity';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { UserRole } from '../enums/index';
 import { BaseResponseDTO } from './baseDTO';
+import { PaginationMeta } from './paginationDTO';
 
 export const CreateUserSchema = z
     .object({
@@ -23,7 +24,7 @@ export const CreateUserSchema = z
     })
     .strict();
 
-export const UpdateUserSchema = CreateUserSchema.partial().refine(
+export const UpdateUserSchema = CreateUserSchema.omit({username: true, email: true}).partial().refine(
     (data) => Object.keys(data).length > 0,
     { message: 'At least one field is required for update' },
 );
@@ -55,4 +56,8 @@ export class UserResponseDTO extends BaseResponseDTO {
 
     @Expose()
     role: UserRole;
+
+    @Expose()
+    @Type(() => Object)
+    pagination?: PaginationMeta;
 }

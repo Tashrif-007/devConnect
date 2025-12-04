@@ -2,6 +2,12 @@ import { UserRepository } from '../repositories/userRepository';
 import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
+import {
+    PaginatedResponseDTO,
+    PaginationQuery,
+    createPaginatedResponse,
+} from '../dto/paginationDTO';
+import { SortDirection, UserOrderBy } from '../enums';
 
 export class UserService {
     private userRepository: UserRepository;
@@ -28,10 +34,35 @@ export class UserService {
         const user = await this.userRepository.create(userData);
         return UserResponseDTO.fromEntity(user);
     }
-    async getAllUsers(): Promise<UserResponseDTO[]> {
-        const users = await this.userRepository.findAll();
-        return UserResponseDTO.fromEntities(users);
+
+    async getAllUsers(
+        paginationDTO: PaginationQuery,
+    ): Promise<PaginatedResponseDTO<UserResponseDTO>> {
+        const page = paginationDTO.page || 1;
+        const itemsPerPage = paginationDTO.itemsPerPage || 10;
+        const find = paginationDTO.find;
+        const sortBy = paginationDTO.sortBy || SortDirection.DESC;
+        const orderBy = paginationDTO.orderBy || UserOrderBy.USER_ID;
+
+        const result = find
+            ? await this.userRepository.search(
+                  find,
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as UserOrderBy,
+              )
+            : await this.userRepository.findAll(
+                  page,
+                  itemsPerPage,
+                  sortBy,
+                  orderBy as UserOrderBy,
+              );
+
+        const users = UserResponseDTO.fromEntities(result.data);
+        return createPaginatedResponse(users, result.total, page, itemsPerPage);
     }
+
     async getUserById(userId: string): Promise<UserResponseDTO> {
         const user = await this.userRepository.findById(userId);
         if (!user) {

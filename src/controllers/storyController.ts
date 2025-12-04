@@ -4,6 +4,7 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { CreateStoryDTO, StoryResponseDTO } from '../dto/storyDTO';
+import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 
 export class StoryController {
     private storyService: StoryService;
@@ -29,10 +30,13 @@ export class StoryController {
 
     getAllStories = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const stories = await this.storyService.getAllStories();
+            const paginationQuery: PaginationQuery =
+                req.query as unknown as PaginationQuery;
+            const result: PaginatedResponseDTO<StoryResponseDTO> =
+                await this.storyService.getAllStories(paginationQuery);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
-                    stories,
+                    result,
                     STORY_RESPONSE_MESSAGES.ALL_RETRIEVED,
                 ),
             );
@@ -76,7 +80,9 @@ export class StoryController {
     deleteStory = async (req: Request, res: Response, next: NextFunction) => {
         try {
             await this.storyService.deleteStory(req.params.storyId);
-            res.status(HttpStatus.OK).json(ResponseFormatter.success(STORY_RESPONSE_MESSAGES.DELETED));
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(STORY_RESPONSE_MESSAGES.DELETED),
+            );
         } catch (error) {
             next(error);
         }

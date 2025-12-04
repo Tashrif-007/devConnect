@@ -2,6 +2,7 @@ import { AppDataSource } from '../config/dataSource';
 import { Story } from '../entity/storyEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
+import { SortDirection, StoryOrderBy } from '../enums';
 
 export class StoryRepository {
     private storyRepository = AppDataSource.getRepository(Story);
@@ -11,8 +12,46 @@ export class StoryRepository {
         return this.storyRepository.save(story);
     }
 
-    async findAll(): Promise<Story[]> {
-        return this.storyRepository.find();
+    async findAll(
+        page: number,
+        itemsPerPage: number,
+        sortBy: SortDirection = SortDirection.DESC,
+        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
+    ): Promise<{ data: Story[]; total: number }> {
+        const offset = (page - 1) * itemsPerPage;
+
+        const query = this.storyRepository
+            .createQueryBuilder('story')
+            .leftJoinAndSelect('story.user', 'user')
+            .orderBy(orderBy, sortBy)
+            .skip(offset)
+            .take(itemsPerPage);
+
+        const [data, total] = await query.getManyAndCount();
+        return { data, total };
+    }
+
+    async search(
+        searchTerm: string,
+        page: number,
+        itemsPerPage: number,
+        sortBy: SortDirection = SortDirection.DESC,
+        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
+    ): Promise<{ data: Story[]; total: number }> {
+        const offset = (page - 1) * itemsPerPage;
+
+        const query = this.storyRepository
+            .createQueryBuilder('story')
+            .leftJoinAndSelect('story.user', 'user')
+            .where('story.title ILIKE :find', { find: `%${searchTerm}%` })
+            .orWhere('story.body ILIKE :find', { find: `%${searchTerm}%` })
+            .orWhere('user.name ILIKE :find', { find: `%${searchTerm}%` })
+            .orderBy(orderBy, sortBy)
+            .skip(offset)
+            .take(itemsPerPage);
+
+        const [data, total] = await query.getManyAndCount();
+        return { data, total };
     }
 
     async findById(storyId: string): Promise<Story | null> {

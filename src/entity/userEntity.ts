@@ -1,38 +1,42 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne, DeleteDateColumn, OneToMany } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    OneToOne,
+    DeleteDateColumn,
+    OneToMany,
+} from 'typeorm';
 import { Auth } from './authEntity';
 import { Story } from './storyEntity';
+import { UserRole } from '../enums';
 
-export enum UserRole {
-    ADMIN = "ADMIN",
-    USER = "USER",
-}
-
-@Entity({ name: "User" })
+@Entity({ name: 'User' })
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  userId: string;
+    @PrimaryGeneratedColumn('uuid')
+    userId: string;
 
-  @Column({ unique: true })
-  username: string;
+    @Column({ unique: true })
+    username: string;
 
-  @Column()
-  name: string;
+    @Column()
+    name: string;
 
-  @Column({ unique: true} )
-  email: string;
+    @Column({ unique: true })
+    email: string;
 
-  @CreateDateColumn()
-  joinDate: Date;
+    @CreateDateColumn()
+    joinDate: Date;
 
-  @Column({ type: "enum", enum: UserRole, default: UserRole.USER })
-  role: UserRole;
+    @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+    role: UserRole;
 
-  @DeleteDateColumn()
-  deletedAt: Date | null;
+    @DeleteDateColumn()
+    deletedAt: Date | null;
 
-  @OneToOne(() => Auth, (auth) => auth.user)
-  auth: Auth;
+    @OneToOne(() => Auth, (auth) => auth.user)
+    auth: Auth;
 
-  @OneToMany(() => Story, story => story.user)
-  stories: Story[];
+    @OneToMany(() => Story, (story) => story.user)
+    stories: Story[];
 }
