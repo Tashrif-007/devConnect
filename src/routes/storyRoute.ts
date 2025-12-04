@@ -13,9 +13,10 @@ import {
 import { PaginationQuerySchema } from '../dto/paginationDTO';
 import { authentication } from '../middlewares/authentication';
 import {
-    creationAuthorization,
-    updateDeleteAuthorization,
+    checkRequiredRoles,
+    storyUpdateDeleteAuthorization,
 } from '../middlewares/authorization';
+import { UserRole } from '../enums';
 
 const storyRouter = express.Router();
 const storyController = new StoryController();
@@ -24,7 +25,7 @@ storyRouter.post(
     '/',
     validateRequestBody(CreateStorySchema),
     authentication(),
-    creationAuthorization(),
+    checkRequiredRoles([UserRole.USER, UserRole.ADMIN]),
     storyController.createStory,
 );
 storyRouter.get(
@@ -42,14 +43,14 @@ storyRouter.put(
     validateRequestParams(StoryIdParamSchema),
     validateRequestBody(UpdateStorySchema),
     authentication(),
-    updateDeleteAuthorization(),
+    storyUpdateDeleteAuthorization(),
     storyController.updateStory,
 );
 storyRouter.delete(
     '/:storyId',
     validateRequestParams(StoryIdParamSchema),
     authentication(),
-    updateDeleteAuthorization(),
+    storyUpdateDeleteAuthorization(),
     storyController.deleteStory,
 );
 

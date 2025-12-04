@@ -11,6 +11,8 @@ import jwt from 'jsonwebtoken';
 import { UserService } from './userService';
 import { ConflictError, UnauthorizedError } from '../errors/errors';
 import { AUTH_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
+import { AppDataSource } from '../config/dataSource';
+import { signToken } from '../utils/jwtUtil';
 
 export class AuthService {
     private authRepository: AuthRepository;
@@ -66,9 +68,7 @@ export class AuthService {
             username: user!.username,
             role: user!.role,
         };
-        const token = jwt.sign(jwtPayload, this.jwtSecret, {
-            expiresIn: '30d',
-        });
+        const token = signToken(jwtPayload);
 
         return {
             token,

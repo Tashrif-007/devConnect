@@ -4,6 +4,7 @@ import { ERROR_MESSAGES } from '../constants/messages';
 import jwt from 'jsonwebtoken';
 import { envValues } from '../utils/envParser';
 import { jwtPayload } from '../dto/authDTO';
+import { verifyToken } from '../utils/jwtUtil';
 
 export interface authenticatedRequest extends Request {
     decoded?: jwtPayload;
@@ -27,10 +28,7 @@ export const authentication = () => {
                 throw new UnauthorizedError(ERROR_MESSAGES.TOKEN_MISSING);
             }
 
-            const decoded = jwt.verify(
-                token,
-                jwtSecret as string,
-            ) as jwtPayload;
+            const decoded = verifyToken(token);
 
             (req as authenticatedRequest).decoded = decoded;
             next();

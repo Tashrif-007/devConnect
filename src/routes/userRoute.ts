@@ -9,9 +9,10 @@ import { UpdateUserSchema, UserIdParamSchema } from '../dto/userDTO';
 import { PaginationQuerySchema } from '../dto/paginationDTO';
 import { authentication } from '../middlewares/authentication';
 import {
-    updateDeleteAuthorization,
-    userAuthorization,
+    userUpdateDeleteAuthorization,
+    checkRequiredRoles,
 } from '../middlewares/authorization';
+import { UserRole } from '../enums';
 
 const userRouter = express.Router();
 const userController = new UserController();
@@ -20,13 +21,13 @@ userRouter.get(
     '/',
     validateRequestQuery(PaginationQuerySchema),
     authentication(),
-    userAuthorization(),
+    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     userController.getAllUsers,
 );
 userRouter.get(
     '/:userId',
     authentication(),
-    userAuthorization(),
+    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     validateRequestParams(UserIdParamSchema),
     userController.getUserById,
 );
@@ -35,14 +36,14 @@ userRouter.put(
     validateRequestParams(UserIdParamSchema),
     validateRequestBody(UpdateUserSchema),
     authentication(),
-    updateDeleteAuthorization(),
+    userUpdateDeleteAuthorization(),
     userController.updateUser,
 );
 userRouter.delete(
     '/:userId',
     validateRequestParams(UserIdParamSchema),
     authentication(),
-    updateDeleteAuthorization(),
+    userUpdateDeleteAuthorization(),
     userController.deleteUser,
 );
 

@@ -4,9 +4,7 @@ import { ForbiddenError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
 import { StoryService } from '../services/storyService';
 
-const allowedRoles = ['ADMIN', 'USER'];
-
-export const creationAuthorization = () => {
+export const checkRequiredRoles = (allowedRoles: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             const decoded = (req as authenticatedRequest).decoded;
@@ -21,15 +19,18 @@ export const creationAuthorization = () => {
     };
 };
 
-export const updateDeleteAuthorization = () => {
+export const baseUpdateDeleteAuthorization = (
+    paramName: string,
+    getResourceOwnerIdFn: (resourceId: string) => Promise<string>,
+) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const requestedUserId = req.params.storyId;
-            const storyService = new StoryService();
-            const story = await storyService.getStoryById(requestedUserId);
-            const userId = story.userId;
+            const resourceId = req.params[paramName];
+            const resourceOwnerId = await getResourceOwnerIdFn(resourceId);
+            const authenticatedUserId = (req as authenticatedRequest).decoded
+                ?.userId;
 
-            if (userId === (req as authenticatedRequest).decoded?.userId) {
+            if (resourceOwnerId === authenticatedUserId) {
                 return next();
             }
             throw new ForbiddenError(ERROR_MESSAGES.ACCESS_FORBIDDEN);
@@ -39,16 +40,18 @@ export const updateDeleteAuthorization = () => {
     };
 };
 
-export const userAuthorization = () => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const decoded = (req as authenticatedRequest).decoded;
-            if (allowedRoles.includes(decoded!.role)) {
-                return next();
-            }
-            throw new ForbiddenError(ERROR_MESSAGES.ACCESS_FORBIDDEN);
-        } catch (error) {
-            next(error);
-        }
-    };
+export const storyUpdateDeleteAuthorization = () => {
+    return baseUpdateDeleteAuthorization('storyId', async (storyId: string) => {
+        const storyService = new StoryService();
+        const story = await storyService.getStoryById(storyId);
+        return story.userId;
+    });
 };
+
+export const userUpdateDeleteAuthorization = () => {
+    return baseUpdateDeleteAuthorization('userId', async (userId: string) => {
+        return userId;
+    });
+};
+
+export const updateDeleteAuthorization = storyUpdateDeleteAuthorization;
