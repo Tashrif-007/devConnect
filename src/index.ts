@@ -8,12 +8,15 @@ import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
 import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
+import { apiLimiter } from './middlewares/rateLimiter';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
 const app = express();
 
 app.use(express.json());
+app.use(apiLimiter);
+
 app.use(`${VERSION}/users`, userRouter);
 app.use(`${VERSION}/stories`, storyRouter);
 app.use(`${VERSION}/auth`, authRouter);

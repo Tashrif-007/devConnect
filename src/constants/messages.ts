@@ -25,7 +25,16 @@ export const AUTH_RESPONSE_MESSAGES = {
     LOGIN_SUCCESS: 'Login successful',
     INVALID_CREDENTIALS: 'Invalid email or password',
     PASSWORD_NOT_MATCHED: 'Password and confirm password does not match',
+    EMAIL_CONFIRMATION_SENT: 'Confirmation email sent successfully',
+    EMAIL_CONFIRMED: 'Email confirmed successfully',
+    EMAIL_NOT_CONFIRMED: 'Please confirm your email before logging in',
+    INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired confirmation token',
+    CONFIRMATION_EMAIL_RESENT: 'Confirmation email resent successfully',
 };
+
+export const RATE_LIMIT_MESSAGES = {
+    TOO_MANY_REQUESTS: 'Too many requests sent',
+}
 
 export const ERROR_MESSAGES = {
     CONFLICT: 'Resource Conflict',

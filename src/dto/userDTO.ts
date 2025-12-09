@@ -29,6 +29,9 @@ export const UpdateUserSchema = CreateUserSchema.omit({
     email: true,
     role: true,
 })
+    .extend({
+        isEmailConfirmed: z.boolean().optional(),
+    })
     .partial()
     .refine((data) => Object.keys(data).length > 0, {
         message: 'At least one field is required for update',
@@ -66,6 +69,9 @@ export class UserResponseDTO extends BaseResponseDTO {
     @Expose()
     joinDate: Date;
 
+    @Expose()
+    isEmailConfirmed: boolean;
+    
     @Expose()
     role: UserRole;
 
