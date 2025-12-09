@@ -14,7 +14,7 @@ export const CreateStorySchema = z.object({
         .trim()
         .min(1, 'Body is required')
         .max(5000, 'Body must not exceed 5000 characters'),
-    userId: z.uuidv4('Invalid user ID format'),
+    userId: z.uuidv4('Invalid user ID format').optional(),
 });
 
 export const UpdateStorySchema = CreateStorySchema.omit({ userId: true })

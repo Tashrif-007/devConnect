@@ -5,6 +5,7 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { CreateStoryDTO, StoryResponseDTO } from '../dto/storyDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
+import { authenticatedRequest } from '../middlewares/authentication';
 
 export class StoryController {
     private storyService: StoryService;
@@ -16,6 +17,8 @@ export class StoryController {
     createStory = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const storyData: CreateStoryDTO = req.body;
+            const decoded = (req as authenticatedRequest).decoded;
+            storyData.userId = decoded!.userId;
             const story = await this.storyService.createStory(storyData);
             res.status(HttpStatus.CREATED).json(
                 ResponseFormatter.success(

@@ -20,13 +20,24 @@ export const USER_RESPONSE_MESSAGES = {
 
 export const STORY_RESPONSE_MESSAGES = createResourceMessages('Story');
 
+export const AUTH_RESPONSE_MESSAGES = {
+    SIGNUP_SUCCESS: 'User registered successfully',
+    LOGIN_SUCCESS: 'Login successful',
+    INVALID_CREDENTIALS: 'Invalid email or password',
+    PASSWORD_NOT_MATCHED: 'Password and confirm password does not match',
+};
+
 export const ERROR_MESSAGES = {
     CONFLICT: 'Resource Conflict',
     DATABASE_FAILED: 'Database operation failed',
     ACCESS_FORBIDDEN: 'Access forbidden',
     RESOURCE_NOT_FOUND: 'Resource not found',
     UNAUTHORIZED: 'Unauthorized access',
-    VALIDATION_FAILED: 'Validation failed',
+    HEADER_MISSING: 'Authorized header is missing',
+    INVALID_HEADER: 'Invalid auth header',
+    TOKEN_MISSING: 'Auth token missing',
+    VALIDATION_FAILED: 'Invalid password',
+    INVALID_TOKEN: 'Token invalid',
     SERVER_ERROR: 'Internal Server Error',
 } as const;
 

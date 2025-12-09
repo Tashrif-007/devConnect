@@ -5,8 +5,7 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
-
-
+import { authenticatedRequest } from '../middlewares/authentication';
 
 export class UserController {
     private userService: UserService;
@@ -66,6 +65,20 @@ export class UserController {
             const user: UserResponseDTO = await this.userService.updateUser(
                 req.params.userId,
                 req.body,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    updateRole = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user: UserResponseDTO = await this.userService.updateUser(
+                req.params.userId,
+                req.body.role,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED),

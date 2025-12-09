@@ -7,6 +7,9 @@ export class Auth {
   authId: string;
 
   @Column()
+  userId: string;
+
+  @Column()
   password: string;
 
   @Column({ type: "timestamp", nullable: true })

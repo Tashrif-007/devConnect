@@ -10,5 +10,7 @@ export const envValues = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_DB: process.env.DB_DB,
     VERSION: process.env.VERSION,
-    NODE_ENV: process.env.NODE_ENV
-}
+    NODE_ENV: process.env.NODE_ENV,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRY: process.env.JWT_EXPIRY,
+};
