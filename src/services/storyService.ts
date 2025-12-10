@@ -29,7 +29,8 @@ export class StoryService {
     }
 
     async createStory(storyData: CreateStoryDTO): Promise<StoryResponseDTO> {
-        return this.storyRepository.create(storyData);
+        const story = await this.storyRepository.create(storyData);
+        return StoryResponseDTO.fromEntity(story);
     }
 
     async getAllStories(
@@ -38,6 +39,7 @@ export class StoryService {
         const page = paginationDTO.page || 1;
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
         const find = paginationDTO.find;
+        const categoryName = (paginationDTO as any).category;
         const sortBy = paginationDTO.sortBy || SortDirection.DESC;
         const orderBy = paginationDTO.orderBy || StoryOrderBy.CREATED_AT;
 
@@ -48,12 +50,14 @@ export class StoryService {
                   itemsPerPage,
                   sortBy,
                   orderBy as StoryOrderBy,
+                  categoryName,
               )
             : await this.storyRepository.findAll(
                   page,
                   itemsPerPage,
                   sortBy,
                   orderBy as StoryOrderBy,
+                  categoryName,
               );
 
         const stories = StoryResponseDTO.fromEntities(result.data);

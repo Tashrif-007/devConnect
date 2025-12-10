@@ -3,7 +3,7 @@ const createResourceMessages = (resourceName: string) => ({
     UPDATED: `${resourceName} updated successfully`,
     DELETED: `${resourceName} deleted successfully`,
     RETRIEVED: `${resourceName} retrieved successfully`,
-    ALL_RETRIEVED: `${resourceName}s retrieved successfully`,
+    ALL_RETRIEVED: `${resourceName}(s) retrieved successfully`,
     NOT_FOUND: `${resourceName} not found`,
     CREATION_FAILED: `Failed to create ${resourceName.toLowerCase()}`,
     UPDATE_FAILED: `Failed to update ${resourceName.toLowerCase()}`,
@@ -20,6 +20,10 @@ export const USER_RESPONSE_MESSAGES = {
 
 export const STORY_RESPONSE_MESSAGES = createResourceMessages('Story');
 
+export const CATEGORY_RESPONSE_MESSAGES = createResourceMessages('Category');
+
+export const SUMMARY_RESPONSE_MESSAGES = createResourceMessages('Summary');
+
 export const AUTH_RESPONSE_MESSAGES = {
     SIGNUP_SUCCESS: 'User registered successfully',
     LOGIN_SUCCESS: 'Login successful',
@@ -34,7 +38,7 @@ export const AUTH_RESPONSE_MESSAGES = {
 
 export const RATE_LIMIT_MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many requests sent',
-}
+};
 
 export const ERROR_MESSAGES = {
     CONFLICT: 'Resource Conflict',
@@ -48,6 +52,7 @@ export const ERROR_MESSAGES = {
     VALIDATION_FAILED: 'Invalid password',
     INVALID_TOKEN: 'Token invalid',
     SERVER_ERROR: 'Internal Server Error',
+    INVALID_CATEGORY_ID: 'Invalid category id provided',
 } as const;
 
 export const VALIDATION_MESSAGES = {

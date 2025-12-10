@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Technology",
+    "description": "Stories and discussions about technology, software development, and programming"
+  },
+  {
+    "name": "JavaScript",
+    "description": "JavaScript programming language, frameworks, and best practices"
+  },
+  {
+    "name": "C++",
+    "description": "C++ programming language, system design, and performance optimization"
+  },
+  {
+    "name": "Web Development",
+    "description": "Frontend and backend web development, web technologies"
+  },
+  {
+    "name": "DevOps",
+    "description": "DevOps practices, CI/CD, infrastructure, and deployment"
+  },
+  {
+    "name": "Database",
+    "description": "Database design, optimization, and management systems"
+  }
+]

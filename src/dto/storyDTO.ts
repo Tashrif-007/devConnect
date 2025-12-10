@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Type, Transform } from 'class-transformer';
 import { BaseResponseDTO } from './baseDTO';
 import { PaginationMeta } from './paginationDTO';
 
@@ -15,6 +15,7 @@ export const CreateStorySchema = z.object({
         .min(1, 'Body is required')
         .max(5000, 'Body must not exceed 5000 characters'),
     userId: z.uuidv4('Invalid user ID format').optional(),
+    categoryIds: z.array(z.uuidv4('Invalid category ID format')).optional(),
 });
 
 export const UpdateStorySchema = CreateStorySchema.omit({ userId: true })
@@ -45,6 +46,13 @@ export class StoryResponseDTO extends BaseResponseDTO {
 
     @Expose()
     userId: string;
+
+    @Expose()
+    @Transform(
+        ({ obj }: { obj: any }) =>
+            obj.categories?.map((cat: any) => cat.name) || [],
+    )
+    categoryNames?: string[];
 
     @Expose()
     createdAt: Date;
