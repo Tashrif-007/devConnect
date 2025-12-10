@@ -53,6 +53,7 @@ export const ERROR_MESSAGES = {
     INVALID_TOKEN: 'Token invalid',
     SERVER_ERROR: 'Internal Server Error',
     INVALID_CATEGORY_ID: 'Invalid category id provided',
+    BAD_GATEWAY: 'Request Failed. Please try later.'
 } as const;
 
 export const VALIDATION_MESSAGES = {

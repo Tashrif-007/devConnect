@@ -16,6 +16,8 @@ export const CreateStorySchema = z.object({
         .max(5000, 'Body must not exceed 5000 characters'),
     userId: z.uuidv4('Invalid user ID format').optional(),
     categoryIds: z.array(z.uuidv4('Invalid category ID format')).optional(),
+    summary: z.string().trim().optional(),
+    skip: z.boolean(),
 });
 
 export const UpdateStorySchema = CreateStorySchema.omit({ userId: true })
@@ -27,6 +29,10 @@ export const UpdateStorySchema = CreateStorySchema.omit({ userId: true })
 
 export const StoryIdParamSchema = z.object({
     storyId: z.uuidv4('Invalid story ID format'),
+});
+
+export const StorySummarySchema = z.object({
+    story: z.string().trim(),
 });
 
 export type CreateStoryDTO = z.infer<typeof CreateStorySchema>;
@@ -46,6 +52,9 @@ export class StoryResponseDTO extends BaseResponseDTO {
 
     @Expose()
     userId: string;
+
+    @Expose()
+    summary?: string | null;
 
     @Expose()
     @Transform(
