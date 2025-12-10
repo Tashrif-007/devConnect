@@ -9,6 +9,7 @@ import storyRouter from './routes/storyRoute';
 import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
 import { apiLimiter } from './middlewares/rateLimiter';
+import categoryRouter from './routes/categoryRoute';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
@@ -21,6 +22,7 @@ app.use(`${VERSION}/users`, userRouter);
 app.use(`${VERSION}/stories`, storyRouter);
 app.use(`${VERSION}/auth`, authRouter);
 app.use(`${VERSION}/admin`, adminRouter);
+app.use(`${VERSION}/category`, categoryRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
     const healthData = {
