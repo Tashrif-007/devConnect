@@ -15,6 +15,7 @@ export const PaginationQuerySchema = z.object({
         .transform((val) => (val ? parseInt(val, 10) : 10))
         .pipe(z.number().int().min(1).max(100)),
     find: z.string().trim().optional(),
+    category: z.string().trim().optional(),
     sortBy: z.enum(SortDirection).optional().default(SortDirection.DESC),
     orderBy: z
         .union([z.enum(UserOrderBy), z.enum(StoryOrderBy)])

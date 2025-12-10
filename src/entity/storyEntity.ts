@@ -4,11 +4,14 @@ import {
     DeleteDateColumn,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import { User } from './userEntity';
+import { Category } from './categoryEntity';
 
 @Entity({ name: 'Story' })
 export class Story {
@@ -36,4 +39,8 @@ export class Story {
     @ManyToOne(() => User, (user) => user.stories)
     @JoinColumn({ name: 'userId' })
     user: User;
+
+    @ManyToMany(() => Category, (category) => category.stories)
+    @JoinTable()
+    categories: Category[];
 }
