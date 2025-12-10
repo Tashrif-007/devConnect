@@ -53,8 +53,20 @@ export const LoginSchema = z
     })
     .strict();
 
+export const ResendConfirmationEmailSchema = z
+    .object({
+        email: z
+            .email({ message: 'Invalid email format' })
+            .trim()
+            .min(1, 'Email is required'),
+    })
+    .strict();
+
 export type SignupDTO = z.infer<typeof SignupSchema>;
 export type LoginDTO = z.infer<typeof LoginSchema>;
+export type ResendConfirmationEmailDTO = z.infer<
+    typeof ResendConfirmationEmailSchema
+>;
 
 export interface authDTO {
     userId: string;
@@ -66,6 +78,12 @@ export interface jwtPayload extends JwtPayload {
     email: string;
     username: string;
     role: UserRole;
+}
+
+export interface EmailConfirmationDTO {
+    userId: string;
+    username: string;
+    email: string;
 }
 
 @Exclude()
@@ -84,6 +102,9 @@ export class AuthResponseDTO extends BaseResponseDTO {
 
     @Expose()
     role: UserRole;
+
+    @Expose()
+    isEmailConfirmed: boolean;
 }
 
 @Exclude()

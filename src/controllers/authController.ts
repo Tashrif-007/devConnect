@@ -26,6 +26,7 @@ export class AuthController {
             next(error);
         }
     };
+
     login = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const loginData: LoginDTO = req.body;
@@ -34,6 +35,41 @@ export class AuthController {
                 ResponseFormatter.success(
                     result,
                     AUTH_RESPONSE_MESSAGES.LOGIN_SUCCESS,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    confirmEmail = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { token } = req.params;
+            const result = await this.authService.confirmEmail(token);
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    result,
+                    AUTH_RESPONSE_MESSAGES.EMAIL_CONFIRMED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    resendConfirmationEmail = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { email } = req.body;
+            const result =
+                await this.authService.resendConfirmationEmail(email);
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    result,
+                    AUTH_RESPONSE_MESSAGES.CONFIRMATION_EMAIL_RESENT,
                 ),
             );
         } catch (error) {

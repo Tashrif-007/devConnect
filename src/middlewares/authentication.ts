@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthorizedError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
-import jwt from 'jsonwebtoken';
-import { envValues } from '../utils/envParser';
 import { jwtPayload } from '../dto/authDTO';
 import { verifyToken } from '../utils/jwtUtil';
 
@@ -14,7 +12,6 @@ export const authentication = () => {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             const authHeader = req.headers.authorization;
-            const jwtSecret = envValues.JWT_SECRET;
 
             if (!authHeader) {
                 throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
