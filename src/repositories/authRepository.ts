@@ -1,16 +1,19 @@
 import { AppDataSource } from '../config/dataSource';
 import { authDTO } from '../dto/authDTO';
 import { Auth } from '../entity/authEntity';
+import { databaseContext } from '../utils/databaseContext';
 
 export class AuthRepository {
     private authRepository = AppDataSource.getRepository(Auth);
 
     async create(authData: authDTO) {
-        const auth = this.authRepository.create({
+        const entityManager = databaseContext.getEntityManager();
+        const manager = entityManager || this.authRepository.manager;
+        const auth = manager.create(Auth, {
             userId: authData.userId,
             password: authData.hashedPassword,
         });
-        return this.authRepository.save(auth);
+        return manager.save(auth);
     }
 
     async findByUserId(userId: string) {
@@ -20,10 +23,9 @@ export class AuthRepository {
     }
 
     async updatePassword(userId: string, hashedPassword: string) {
-        return this.authRepository.update(
-            { userId },
-            { password: hashedPassword },
-        );
+        const entityManager = databaseContext.getEntityManager();
+        const manager = entityManager || this.authRepository.manager;
+        return manager.update(Auth, { userId }, { password: hashedPassword });
     }
 
     async deleteByUserId(userId: string) {

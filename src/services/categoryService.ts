@@ -23,6 +23,14 @@ export class CategoryService {
         return this.categoryRepository.getCategoryById(categoryId);
     }
 
+    async validateCategoryIds(categoryIds: string[]): Promise<boolean> {
+        return this.categoryRepository.validateCategoryIds(categoryIds);
+    }
+
+    async getInvalidCategoryIds(categoryIds: string[]): Promise<string[]> {
+        return this.categoryRepository.getInvalidCategoryIds(categoryIds);
+    }
+
     async deleteCategory(categoryId: string) {
         const result = await this.categoryRepository.delete(categoryId);
         if (!result.affected) {
