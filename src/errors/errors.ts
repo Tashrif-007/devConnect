@@ -53,3 +53,10 @@ export class DatabaseError extends AppError {
     Object.setPrototypeOf(this, DatabaseError.prototype);
   }
 }
+
+export class OpenRouterError extends AppError {
+  constructor(message: string, status: number) {
+    super(message, status);
+    Object.setPrototypeOf(this, OpenRouterError.prototype);
+  }
+}

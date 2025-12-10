@@ -54,4 +54,12 @@ storyRouter.delete(
     storyController.deleteStory,
 );
 
+storyRouter.post(
+    '/:storyId/regenerate-summary',
+    validateRequestParams(StoryIdParamSchema),
+    authentication(),
+    checkRequiredRoles([UserRole.USER]),
+    storyController.regenerateSummary,
+);
+
 export default storyRouter;
