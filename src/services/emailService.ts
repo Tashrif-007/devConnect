@@ -1,10 +1,10 @@
+import { injectable } from 'tsyringe';
 import nodemailer, { Transporter } from 'nodemailer';
 import { EmailConfirmationDTO } from '../dto/authDTO';
 import { envValues } from '../utils/envParser';
-import path from 'path';
 import ejs from 'ejs';
-import { signEmailConfirmationToken } from '../utils/jwtUtil';
 
+@injectable()
 export class EmailService {
     private transporter: Transporter;
 
@@ -21,22 +21,16 @@ export class EmailService {
     }
 
     async sendConfirmationEmail(userData: EmailConfirmationDTO): Promise<void> {
-        const token = signEmailConfirmationToken(userData.userId);
-
-        const confirmationUrl = `${envValues.APP_URL || 'http://localhost:3000'}/auth/confirm-email/${token}`;
-        const templatePath = path.join(
-            __dirname,
-            '../templates/emailConfirmation.ejs',
-        );
-        const html = await ejs.renderFile(templatePath, {
+        const html = await ejs.renderFile(userData.templatePath, {
             username: userData.username,
-            confirmationUrl,
-            token,
+            token: userData.token,
+            email: userData.email,
+            confirmationUrl: userData.confirmationUrl
         });
         const mailOptions = {
             from: envValues.SMTP_FROM_EMAIL,
             to: userData.email,
-            subject: 'Confirm Your Email - devConnect',
+            subject: userData.subject,
             html,
         };
 
