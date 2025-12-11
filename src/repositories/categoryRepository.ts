@@ -2,7 +2,10 @@ import { UpdateResult } from 'typeorm';
 import { AppDataSource } from '../config/dataSource';
 import { CategoryDTO } from '../dto/categoryDTO';
 import { Category } from '../entity/categoryEntity';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class CategoryRepository {
     private categoryRepository = AppDataSource.getRepository(Category);
 

@@ -4,13 +4,12 @@ import { CategoryDTO, CategoryResponseDTO } from '../dto/categoryDTO';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class CategoryController {
-    private categoryService: CategoryService;
-
-    constructor() {
-        this.categoryService = new CategoryService();
-    }
+    constructor(private categoryService: CategoryService) {}
 
     createCategory = async (
         req: Request,

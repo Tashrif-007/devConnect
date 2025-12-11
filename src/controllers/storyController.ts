@@ -2,17 +2,19 @@ import { NextFunction, Request, Response } from 'express';
 import { StoryService } from '../services/storyService';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
-import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
+import {
+    STORY_RESPONSE_MESSAGES,
+    SUMMARY_RESPONSE_MESSAGES,
+} from '../constants/messages';
 import { CreateStoryDTO, StoryResponseDTO } from '../dto/storyDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 import { authenticatedRequest } from '../middlewares/authentication';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class StoryController {
-    private storyService: StoryService;
-
-    constructor() {
-        this.storyService = new StoryService();
-    }
+    constructor(private storyService: StoryService) {}
 
     createStory = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -103,7 +105,7 @@ export class StoryController {
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     story,
-                    'Summary regenerated successfully',
+                    SUMMARY_RESPONSE_MESSAGES.CREATED,
                 ),
             );
         } catch (error) {

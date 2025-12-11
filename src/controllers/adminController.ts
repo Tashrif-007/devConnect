@@ -4,13 +4,13 @@ import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class AdminController {
-    private userService: UserService;
 
-    constructor() {
-        this.userService = new UserService();
-    }
+    constructor(private userService: UserService) {}
 
     updateUserRole = async (
         req: Request,

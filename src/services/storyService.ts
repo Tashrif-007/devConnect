@@ -20,17 +20,16 @@ import {
 } from '../errors/errors';
 import { AiService } from './aiService';
 import { HttpStatus } from '../constants/httpStatus';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class StoryService {
-    private storyRepository: StoryRepository;
-    private categoryService: CategoryService;
-    private aiService: AiService;
-
-    constructor() {
-        this.storyRepository = new StoryRepository();
-        this.categoryService = new CategoryService();
-        this.aiService = new AiService();
-    }
+    constructor(
+        private storyRepository: StoryRepository,
+        private categoryService: CategoryService,
+        private aiService: AiService,
+    ) {}
 
     private ensureExists(story: Story | null): Story {
         if (!story) {
