@@ -34,6 +34,8 @@ export const AUTH_RESPONSE_MESSAGES = {
     EMAIL_NOT_CONFIRMED: 'Please confirm your email before logging in',
     INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired confirmation token',
     CONFIRMATION_EMAIL_RESENT: 'Confirmation email resent successfully',
+    PASSWORD_CHANGE_REQUESTED: 'Password change requested successfully',
+    CODE_VALIDATED: 'Code validated successfully',
 };
 
 export const RATE_LIMIT_MESSAGES = {
@@ -53,7 +55,11 @@ export const ERROR_MESSAGES = {
     INVALID_TOKEN: 'Token invalid',
     SERVER_ERROR: 'Internal Server Error',
     INVALID_CATEGORY_ID: 'Invalid category id provided',
-    BAD_GATEWAY: 'Request Failed. Please try later.'
+    BAD_GATEWAY: 'Request Failed. Please try later.',
+    USED: 'Code Already Used',
+    EXPIRED: 'Code has expired',
+    EMAIL_CONFIRMED_ALREADY: 'Email is already confirmed',
+    INVALID_CODE: 'Invalid code',
 } as const;
 
 export const VALIDATION_MESSAGES = {
