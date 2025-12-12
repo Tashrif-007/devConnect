@@ -9,9 +9,10 @@ import { apiLimiter } from '../middlewares/rateLimiter';
 import { checkRequiredRoles } from '../middlewares/authorization';
 import { UserRole } from '../enums';
 import { authentication } from '../middlewares/authentication';
+import { container } from 'tsyringe';
 
 const categoryRouter = express.Router();
-const categoryController = new CategoryController();
+const categoryController = container.resolve(CategoryController);
 
 categoryRouter.post(
     '/',

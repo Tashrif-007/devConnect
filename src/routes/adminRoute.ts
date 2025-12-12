@@ -9,9 +9,10 @@ import {
 import { UpdateRoleSchema } from '../dto/userDTO';
 import { UserIdParamSchema } from '../dto/userDTO';
 import { UserRole } from '../enums';
+import { container } from 'tsyringe';
 
 const adminRouter = express.Router();
-const adminController = new AdminController();
+const adminController = container.resolve(AdminController);
 
 adminRouter.patch(
     '/role/:userId',

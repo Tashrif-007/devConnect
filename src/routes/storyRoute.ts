@@ -17,9 +17,10 @@ import {
     storyUpdateDeleteAuthorization,
 } from '../middlewares/authorization';
 import { UserRole } from '../enums';
+import { container } from 'tsyringe';
 
 const storyRouter = express.Router();
-const storyController = new StoryController();
+const storyController = container.resolve(StoryController);
 
 storyRouter.post(
     '/',
