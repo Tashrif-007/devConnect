@@ -99,12 +99,13 @@ export class AuthController {
         try {
             const { confirmationCode } = req.body;
             const userId = (req as authenticatedRequest).decoded?.userId;
-            await this.authService.validateCode(
+            const result = await this.authService.validateCode(
                 userId!,
                 confirmationCode,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
+                    result,
                     AUTH_RESPONSE_MESSAGES.CODE_VALIDATED,
                 ),
             );

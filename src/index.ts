@@ -1,4 +1,6 @@
 import express from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import { AppDataSource } from './config/dataSource';
 import userRouter from './routes/userRoute';
 import { errorHandler } from './middlewares/errorHandler';
@@ -10,19 +12,25 @@ import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
 import { apiLimiter } from './middlewares/rateLimiter';
 import categoryRouter from './routes/categoryRoute';
+import { swaggerOptions, swaggerUIOptions } from './config/swagger';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
 const app = express();
 
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
 app.use(express.json());
 app.use(apiLimiter);
+
+app.use('/api-docs', swaggerUi.serve);
+app.get('/api-docs', swaggerUi.setup(swaggerSpec, swaggerUIOptions));
 
 app.use(`${VERSION}/users`, userRouter);
 app.use(`${VERSION}/stories`, storyRouter);
 app.use(`${VERSION}/auth`, authRouter);
 app.use(`${VERSION}/admin`, adminRouter);
-app.use(`${VERSION}/category`, categoryRouter);
+app.use(`${VERSION}/categories`, categoryRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
     const healthData = {
