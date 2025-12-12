@@ -3,7 +3,7 @@ import { Story } from '../entity/storyEntity';
 import { Category } from '../entity/categoryEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
-import { SortDirection, StoryOrderBy } from '../enums';
+import { PaginationQuery } from '../dto/paginationDTO';
 
 export class StoryRepository {
     private storyRepository = AppDataSource.getRepository(Story);
@@ -26,62 +26,62 @@ export class StoryRepository {
     }
 
     async findAll(
-        page: number,
-        itemsPerPage: number,
-        sortBy: SortDirection = SortDirection.DESC,
-        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
-        categoryName?: string,
+        paginationDTO: PaginationQuery
     ): Promise<{ data: Story[]; total: number }> {
-        const offset = (page - 1) * itemsPerPage;
+        const offset = (paginationDTO.page - 1) * paginationDTO.itemsPerPage;
 
         let query = this.storyRepository
             .createQueryBuilder('story')
             .leftJoinAndSelect('story.user', 'user');
 
-        if (categoryName) {
+        if (paginationDTO.category) {
             query = query
                 .innerJoinAndSelect('story.categories', 'categories')
                 .where('categories.name ILIKE :categoryName', {
-                    categoryName: `%${categoryName}%`,
+                    categoryName: `%${paginationDTO.category}%`,
                 });
         } else {
             query = query.leftJoinAndSelect('story.categories', 'categories');
         }
 
-        query = query.orderBy(orderBy, sortBy).skip(offset).take(itemsPerPage);
+        query = query.orderBy(paginationDTO.orderBy, paginationDTO.sortBy).skip(offset).take(paginationDTO.itemsPerPage);
 
         const [data, total] = await query.getManyAndCount();
         return { data, total };
     }
 
     async search(
-        searchTerm: string,
-        page: number,
-        itemsPerPage: number,
-        sortBy: SortDirection = SortDirection.DESC,
-        orderBy: StoryOrderBy = StoryOrderBy.CREATED_AT,
-        categoryName?: string,
+        paginationDTO: PaginationQuery,
     ): Promise<{ data: Story[]; total: number }> {
-        const offset = (page - 1) * itemsPerPage;
+        const offset = (paginationDTO.page - 1) * paginationDTO.itemsPerPage;
 
         let query = this.storyRepository
             .createQueryBuilder('story')
             .leftJoinAndSelect('story.user', 'user')
-            .where('story.title ILIKE :find', { find: `%${searchTerm}%` })
-            .orWhere('story.body ILIKE :find', { find: `%${searchTerm}%` })
-            .orWhere('user.name ILIKE :find', { find: `%${searchTerm}%` });
+            .where('story.title ILIKE :find', {
+                find: `%${paginationDTO.find}%`,
+            })
+            .orWhere('story.body ILIKE :find', {
+                find: `%${paginationDTO.find}%`,
+            })
+            .orWhere('user.name ILIKE :find', {
+                find: `%${paginationDTO.find}%`,
+            });
 
-        if (categoryName) {
+        if (paginationDTO.category) {
             query = query
                 .innerJoinAndSelect('story.categories', 'categories')
                 .andWhere('categories.name ILIKE :categoryName', {
-                    categoryName: `%${categoryName}%`,
+                    categoryName: `%${paginationDTO.category}%`,
                 });
         } else {
             query = query.leftJoinAndSelect('story.categories', 'categories');
         }
 
-        query = query.orderBy(orderBy, sortBy).skip(offset).take(itemsPerPage);
+        query = query
+            .orderBy(paginationDTO.orderBy, paginationDTO.sortBy)
+            .skip(offset)
+            .take(paginationDTO.itemsPerPage);
 
         const [data, total] = await query.getManyAndCount();
         return { data, total };

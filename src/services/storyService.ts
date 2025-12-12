@@ -1,24 +1,35 @@
 import { StoryRepository } from '../repositories/storyRepository';
+import { CategoryService } from './categoryService';
 import {
     CreateStoryDTO,
     StoryResponseDTO,
     UpdateStoryDTO,
 } from '../dto/storyDTO';
 import { Story } from '../entity/storyEntity';
-import { STORY_RESPONSE_MESSAGES } from '../constants/messages';
+import { ERROR_MESSAGES, STORY_RESPONSE_MESSAGES } from '../constants/messages';
 import {
     PaginatedResponseDTO,
     PaginationQuery,
     createPaginatedResponse,
 } from '../dto/paginationDTO';
 import { SortDirection, StoryOrderBy } from '../enums';
-import { NotFoundError } from '../errors/errors';
+import {
+    NotFoundError,
+    OpenRouterError,
+    ValidationError,
+} from '../errors/errors';
+import { AiService } from './aiService';
+import { HttpStatus } from '../constants/httpStatus';
 
 export class StoryService {
     private storyRepository: StoryRepository;
+    private categoryService: CategoryService;
+    private aiService: AiService;
 
     constructor() {
         this.storyRepository = new StoryRepository();
+        this.categoryService = new CategoryService();
+        this.aiService = new AiService();
     }
 
     private ensureExists(story: Story | null): Story {
@@ -29,6 +40,26 @@ export class StoryService {
     }
 
     async createStory(storyData: CreateStoryDTO): Promise<StoryResponseDTO> {
+        if (storyData.categoryIds && storyData.categoryIds.length > 0) {
+            const invalidCategoryIds =
+                await this.categoryService.getInvalidCategoryIds(
+                    storyData.categoryIds,
+                );
+
+            if (invalidCategoryIds.length > 0) {
+                throw new ValidationError(ERROR_MESSAGES.INVALID_CATEGORY_ID);
+            }
+        }
+
+        if (!storyData.skip) {
+            try {
+                storyData.summary = await this.aiService.summarize(
+                    storyData.body,
+                );
+            } catch (error) {
+                storyData.summary = undefined;
+            }
+        }
         const story = await this.storyRepository.create(storyData);
         return StoryResponseDTO.fromEntity(story);
     }
@@ -36,36 +67,22 @@ export class StoryService {
     async getAllStories(
         paginationDTO: PaginationQuery,
     ): Promise<PaginatedResponseDTO<StoryResponseDTO>> {
-        const page = paginationDTO.page || 1;
-        const itemsPerPage = paginationDTO.itemsPerPage || 10;
-        const find = paginationDTO.find;
-        const categoryName = (paginationDTO as any).category;
-        const sortBy = paginationDTO.sortBy || SortDirection.DESC;
-        const orderBy = paginationDTO.orderBy || StoryOrderBy.CREATED_AT;
+        paginationDTO.page = paginationDTO.page || 1;
+        paginationDTO.itemsPerPage = paginationDTO.itemsPerPage || 10;
+        paginationDTO.sortBy = paginationDTO.sortBy || SortDirection.DESC;
+        paginationDTO.orderBy =
+            paginationDTO.orderBy || StoryOrderBy.CREATED_AT;
 
-        const result = find
-            ? await this.storyRepository.search(
-                  find,
-                  page,
-                  itemsPerPage,
-                  sortBy,
-                  orderBy as StoryOrderBy,
-                  categoryName,
-              )
-            : await this.storyRepository.findAll(
-                  page,
-                  itemsPerPage,
-                  sortBy,
-                  orderBy as StoryOrderBy,
-                  categoryName,
-              );
+        const result = paginationDTO.find
+            ? await this.storyRepository.search(paginationDTO)
+            : await this.storyRepository.findAll(paginationDTO);
 
         const stories = StoryResponseDTO.fromEntities(result.data);
         return createPaginatedResponse(
             stories,
             result.total,
-            page,
-            itemsPerPage,
+            paginationDTO.page,
+            paginationDTO.itemsPerPage,
         );
     }
 
@@ -76,6 +93,25 @@ export class StoryService {
     }
 
     async updateStory(storyId: string, storyData: UpdateStoryDTO) {
+        if (storyData.categoryIds && storyData.categoryIds.length > 0) {
+            const invalidCategoryIds =
+                await this.categoryService.getInvalidCategoryIds(
+                    storyData.categoryIds,
+                );
+
+            if (invalidCategoryIds.length > 0) {
+                throw new ValidationError(ERROR_MESSAGES.INVALID_CATEGORY_ID);
+            }
+        }
+        if (storyData.body) {
+            try {
+                storyData.summary = await this.aiService.summarize(
+                    storyData.body,
+                );
+            } catch (error) {
+                storyData.summary = undefined;
+            }
+        }
         const story = await this.storyRepository.updateStory(
             storyId,
             storyData,
@@ -88,6 +124,29 @@ export class StoryService {
         const result = await this.storyRepository.softDelete(storyId);
         if (!result.affected) {
             throw new NotFoundError(STORY_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+    }
+
+    async regenerateSummary(storyId: string): Promise<StoryResponseDTO> {
+        const story = await this.storyRepository.findById(storyId);
+        this.ensureExists(story);
+
+        try {
+            const summary = await this.aiService.summarize(story!.body);
+            story!.summary = summary;
+            const updatedStory = await this.storyRepository.updateStory(
+                storyId,
+                {
+                    summary,
+                },
+            );
+            this.ensureExists(updatedStory);
+            return StoryResponseDTO.fromEntity(updatedStory!);
+        } catch (error) {
+            throw new OpenRouterError(
+                ERROR_MESSAGES.BAD_GATEWAY,
+                HttpStatus.BAD_GATEWAY,
+            );
         }
     }
 }

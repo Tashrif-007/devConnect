@@ -90,4 +90,24 @@ export class StoryController {
             next(error);
         }
     };
+
+    regenerateSummary = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const story = await this.storyService.regenerateSummary(
+                req.params.storyId,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    story,
+                    'Summary regenerated successfully',
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 }

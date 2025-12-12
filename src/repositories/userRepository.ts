@@ -2,15 +2,17 @@ import { AppDataSource } from '../config/dataSource';
 import { User } from '../entity/userEntity';
 import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { SortDirection, UserOrderBy } from '../enums';
-import { EntityManager, UpdateResult } from 'typeorm';
+import { UpdateResult } from 'typeorm';
+import { databaseContext } from '../utils/databaseContext';
 
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
 
-    async create(userData: CreateUserDTO, entityManager?: EntityManager): Promise<User> {
+    async create(userData: CreateUserDTO): Promise<User> {
+        const entityManager = databaseContext.getEntityManager();
         const manager = entityManager || this.userRepository.manager;
         const user = manager.create(User, userData);
-        return this.userRepository.save(user);
+        return manager.save(user);
     }
 
     async findAll(

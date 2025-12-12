@@ -19,6 +19,31 @@ export class CategoryRepository {
         return this.categoryRepository.findOneBy({ categoryId });
     }
 
+    async validateCategoryIds(categoryIds: string[]): Promise<boolean> {
+        if (!categoryIds || categoryIds.length === 0) {
+            return true; 
+        }
+
+        const foundCategories = await this.categoryRepository.find({
+            where: categoryIds.map((id) => ({ categoryId: id })),
+        });
+
+        return foundCategories.length === categoryIds.length;
+    }
+
+    async getInvalidCategoryIds(categoryIds: string[]): Promise<string[]> {
+        if (!categoryIds || categoryIds.length === 0) {
+            return [];
+        }
+
+        const foundCategories = await this.categoryRepository.find({
+            where: categoryIds.map((id) => ({ categoryId: id })),
+        });
+
+        const foundIds = new Set(foundCategories.map((c) => c.categoryId));
+        return categoryIds.filter((id) => !foundIds.has(id));
+    }
+
     async delete(categoryId: string): Promise<UpdateResult> {
         return this.categoryRepository.softDelete(categoryId);
     }

@@ -1,4 +1,5 @@
 import { AuthRepository } from '../repositories/authRepository';
+import { TransactionRepository } from '../repositories/transactionRepository';
 import {
     SignupDTO,
     AuthResponseDTO,
@@ -14,17 +15,18 @@ import {
     NotFoundError,
 } from '../errors/errors';
 import { AUTH_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
-import { AppDataSource } from '../config/dataSource';
 import { signToken, verifyEmailConfirmationToken } from '../utils/jwtUtil';
 import { EmailService } from './emailService';
 
 export class AuthService {
     private authRepository: AuthRepository;
+    private transactionRepository: TransactionRepository;
     private userService: UserService;
     private emailService: EmailService;
 
     constructor() {
         this.authRepository = new AuthRepository();
+        this.transactionRepository = new TransactionRepository();
         this.userService = new UserService();
         this.emailService = new EmailService();
     }
@@ -38,32 +40,33 @@ export class AuthService {
     }
 
     async signup(signupData: SignupDTO) {
-        return await AppDataSource.transaction(async (entityManager) => {
-            if (signupData.password !== signupData.confirmPassword) {
-                throw new ConflictError(
-                    AUTH_RESPONSE_MESSAGES.PASSWORD_NOT_MATCHED,
-                );
-            }
-            const hashedPassword = await bcrypt.hash(signupData.password, 10);
+        if (signupData.password !== signupData.confirmPassword) {
+            throw new ConflictError(
+                AUTH_RESPONSE_MESSAGES.PASSWORD_NOT_MATCHED,
+            );
+        }
+        const hashedPassword = await bcrypt.hash(signupData.password, 10);
 
-            const userDTO = await this.userService.createUser(
-                {
+        const userDTO = await this.transactionRepository.executeInTransaction(
+            async () => {
+                const createdUserDTO = await this.userService.createUser({
                     username: signupData.username,
                     name: signupData.name,
                     email: signupData.email,
-                },
-                entityManager,
-            );
+                });
 
-            await this.authRepository.create({
-                userId: userDTO.userId,
-                hashedPassword,
-            });
+                await this.authRepository.create({
+                    userId: createdUserDTO.userId,
+                    hashedPassword,
+                });
 
-            await this.sendEmail(userDTO);
+                return createdUserDTO;
+            },
+        );
 
-            return userDTO;
-        });
+        await this.sendEmail(userDTO);
+
+        return userDTO;
     }
 
     async login(loginData: LoginDTO) {
