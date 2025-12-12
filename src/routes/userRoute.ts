@@ -5,7 +5,11 @@ import {
     validateRequestParams,
     validateRequestQuery,
 } from '../middlewares/validateRequest';
-import { UpdateUserSchema, UserIdParamSchema } from '../dto/userDTO';
+import {
+    UpdateUserSchema,
+    UpdateProfileSchema,
+    UserIdParamSchema,
+} from '../dto/userDTO';
 import { PaginationQuerySchema } from '../dto/paginationDTO';
 import { authentication } from '../middlewares/authentication';
 import {
@@ -18,6 +22,19 @@ import { container } from 'tsyringe';
 const userRouter = express.Router();
 const userController = container.resolve(UserController);
 
+userRouter.get(
+    '/profile',
+    authentication(),
+    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
+    userController.getProfile,
+);
+userRouter.put(
+    '/profile',
+    validateRequestBody(UpdateProfileSchema),
+    authentication(),
+    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
+    userController.updateProfile,
+);
 userRouter.get(
     '/',
     validateRequestQuery(PaginationQuerySchema),

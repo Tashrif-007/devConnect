@@ -34,6 +34,9 @@ export class User {
     @Column({ default: false })
     isEmailConfirmed: boolean;
 
+    @Column({ nullable: true })
+    profilePictureUrl?: string;
+
     @DeleteDateColumn()
     deletedAt: Date | null;
 

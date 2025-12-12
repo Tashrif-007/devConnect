@@ -1,5 +1,10 @@
 import { UserRepository } from '../repositories/userRepository';
-import { CreateUserDTO, UpdateUserDTO, UserResponseDTO } from '../dto/userDTO';
+import {
+    CreateUserDTO,
+    UpdateUserDTO,
+    UpdateProfileDTO,
+    UserResponseDTO,
+} from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
 import {
@@ -93,6 +98,18 @@ export class UserService {
         }
         return UserResponseDTO.fromEntity(user);
     }
+
+    async updateProfile(
+        userId: string,
+        profileData: UpdateProfileDTO,
+    ): Promise<UserResponseDTO> {
+        const user = await this.userRepository.update(userId, profileData);
+        if (!user) {
+            throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
+        }
+        return UserResponseDTO.fromEntity(user);
+    }
+
     async deleteUser(userId: string): Promise<void> {
         const result = await this.userRepository.softDelete(userId);
         if (!result.affected) {

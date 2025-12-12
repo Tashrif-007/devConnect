@@ -5,6 +5,7 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
+import { authenticatedRequest } from '../middlewares/authentication';
 import 'reflect-metadata';
 import { injectable } from 'tsyringe';
 
@@ -90,6 +91,38 @@ export class UserController {
         try {
             await this.userService.deleteUser(req.params.userId);
             res.status(HttpStatus.NO_CONTENT).send();
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getProfile = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as authenticatedRequest).decoded?.userId;
+            const user: UserResponseDTO = await this.userService.getUserById(
+                userId!,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    user,
+                    USER_RESPONSE_MESSAGES.RETRIEVED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as authenticatedRequest).decoded?.userId;
+            const user: UserResponseDTO = await this.userService.updateProfile(
+                userId!,
+                req.body,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED),
+            );
         } catch (error) {
             next(error);
         }
