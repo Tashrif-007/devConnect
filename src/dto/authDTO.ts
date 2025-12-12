@@ -131,6 +131,9 @@ export class AuthResponseDTO extends BaseResponseDTO {
 
     @Expose()
     isEmailConfirmed: boolean;
+
+    @Expose()
+    profilePictureUrl?: string;
 }
 
 @Exclude()
