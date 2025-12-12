@@ -1,6 +1,9 @@
 import { OpenRouterError } from '../errors/errors';
 import { envValues } from '../utils/envParser';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class AiService {
     async summarize(prompt: string) {
         const response = await fetch(envValues.OPENROUTER_ENDPOINT!, {

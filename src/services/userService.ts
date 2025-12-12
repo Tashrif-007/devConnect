@@ -9,13 +9,12 @@ import {
 } from '../dto/paginationDTO';
 import { SortDirection, UserOrderBy, UserRole } from '../enums';
 import { User } from '../entity/userEntity';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class UserService {
-    private userRepository: UserRepository;
-
-    constructor() {
-        this.userRepository = new UserRepository();
-    }
+    constructor(private userRepository: UserRepository) {}
 
     async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {
         const existingUserByUsername = await this.userRepository.findByUsername(
@@ -86,7 +85,9 @@ export class UserService {
         userId: string,
         role: UserRole,
     ): Promise<UserResponseDTO> {
-        const user = await this.userRepository.update(userId, { role } as UpdateUserDTO );
+        const user = await this.userRepository.update(userId, {
+            role,
+        } as UpdateUserDTO);
         if (!user) {
             throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
         }

@@ -1,13 +1,17 @@
+import { injectable } from 'tsyringe';
 import { AppDataSource } from '../config/dataSource';
-import { authDTO } from '../dto/authDTO';
+import { authDTO, UpdateAuthDTO } from '../dto/authDTO';
 import { Auth } from '../entity/authEntity';
-import { databaseContext } from '../utils/databaseContext';
+import { DatabaseContextManager } from '../utils/databaseContext';
 
+@injectable()
 export class AuthRepository {
     private authRepository = AppDataSource.getRepository(Auth);
 
+    constructor(private databaseContext: DatabaseContextManager) {}
+
     async create(authData: authDTO) {
-        const entityManager = databaseContext.getEntityManager();
+        const entityManager = this.databaseContext.getEntityManager();
         const manager = entityManager || this.authRepository.manager;
         const auth = manager.create(Auth, {
             userId: authData.userId,
@@ -19,13 +23,14 @@ export class AuthRepository {
     async findByUserId(userId: string) {
         return this.authRepository.findOne({
             where: { userId },
+            relations: ['user'],
         });
     }
 
-    async updatePassword(userId: string, hashedPassword: string) {
-        const entityManager = databaseContext.getEntityManager();
+    async update(updateData: UpdateAuthDTO) {
+        const entityManager = this.databaseContext.getEntityManager();
         const manager = entityManager || this.authRepository.manager;
-        return manager.update(Auth, { userId }, { password: hashedPassword });
+        return manager.update(Auth, { userId: updateData.userId }, updateData);
     }
 
     async deleteByUserId(userId: string) {

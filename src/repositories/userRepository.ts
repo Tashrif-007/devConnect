@@ -4,7 +4,10 @@ import { CreateUserDTO, UpdateUserDTO } from '../dto/userDTO';
 import { SortDirection, UserOrderBy } from '../enums';
 import { UpdateResult } from 'typeorm';
 import { databaseContext } from '../utils/databaseContext';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class UserRepository {
     private userRepository = AppDataSource.getRepository(User);
 

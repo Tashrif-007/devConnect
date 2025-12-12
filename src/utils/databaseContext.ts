@@ -1,7 +1,10 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { EntityManager } from 'typeorm';
+import 'reflect-metadata'
+import { injectable } from 'tsyringe';
 
-class DatabaseContextManager {
+@injectable()
+export class DatabaseContextManager {
     private entityManagerStorage = new AsyncLocalStorage<EntityManager>();
 
     getEntityManager(): EntityManager | undefined {

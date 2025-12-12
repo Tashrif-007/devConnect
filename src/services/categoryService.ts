@@ -2,13 +2,12 @@ import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { CategoryDTO, CategoryResponseDTO } from '../dto/categoryDTO';
 import { ConflictError } from '../errors/errors';
 import { CategoryRepository } from '../repositories/categoryRepository';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class CategoryService {
-    private categoryRepository: CategoryRepository;
-
-    constructor() {
-        this.categoryRepository = new CategoryRepository();
-    }
+    constructor(private categoryRepository: CategoryRepository) {}
 
     async createCategory(categoryData: CategoryDTO) {
         const category = await this.categoryRepository.create(categoryData);

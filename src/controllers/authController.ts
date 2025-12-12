@@ -1,16 +1,15 @@
+import { injectable } from 'tsyringe';
 import { NextFunction, Request, Response } from 'express';
 import { AuthService } from '../services/authService';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import { AUTH_RESPONSE_MESSAGES } from '../constants/messages';
 import { LoginDTO } from '../dto/authDTO';
+import { authenticatedRequest } from '../middlewares/authentication';
 
+@injectable()
 export class AuthController {
-    private authService: AuthService;
-
-    constructor() {
-        this.authService = new AuthService();
-    }
+    constructor(private authService: AuthService) {}
 
     signup = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -71,6 +70,64 @@ export class AuthController {
                     result,
                     AUTH_RESPONSE_MESSAGES.CONFIRMATION_EMAIL_RESENT,
                 ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    changePassword = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { password } = req.body;
+            const userId = (req as authenticatedRequest).decoded?.userId;
+            await this.authService.changePassword(userId!, password);
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    AUTH_RESPONSE_MESSAGES.PASSWORD_CHANGE_REQUESTED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    validateCode = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { confirmationCode } = req.body;
+            const userId = (req as authenticatedRequest).decoded?.userId;
+            await this.authService.validateCode(
+                userId!,
+                confirmationCode,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    AUTH_RESPONSE_MESSAGES.CODE_VALIDATED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    updatePassword = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const { newPassword, sessionToken } = req.body;
+            const userId = (req as authenticatedRequest).decoded?.userId;
+            const result = await this.authService.updatePassword(
+                userId!,
+                newPassword,
+                sessionToken,
+            );
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(result, result.message),
             );
         } catch (error) {
             next(error);

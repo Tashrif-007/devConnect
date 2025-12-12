@@ -62,11 +62,33 @@ export const ResendConfirmationEmailSchema = z
     })
     .strict();
 
+export const UpdateAuthSchema = z.object({
+    confirmationCode: z.string().trim().optional(),
+    password: z.string().optional(),
+    isUsed: z.boolean().optional(),
+    userId: z.uuidv4('Invalid user ID format'),
+    codeExpiresAt: z.date().optional(),
+    passwordLastModificationTime: z.date().optional(),
+});
+
+export const ValidateCodeSchema = z.object({
+    confirmationCode: z
+        .string({ message: 'Confirmation code is required' })
+        .trim()
+        .min(1, 'Confirmation code is required'),
+});
+
+export const UpdatePasswordWithTokenSchema = z.object({
+    newPassword: passwordSchema,
+    sessionToken: z.string({ message: 'Session token is required' }),
+});
+
 export type SignupDTO = z.infer<typeof SignupSchema>;
 export type LoginDTO = z.infer<typeof LoginSchema>;
 export type ResendConfirmationEmailDTO = z.infer<
     typeof ResendConfirmationEmailSchema
 >;
+export type UpdateAuthDTO = z.infer<typeof UpdateAuthSchema>;
 
 export interface authDTO {
     userId: string;
@@ -84,6 +106,10 @@ export interface EmailConfirmationDTO {
     userId: string;
     username: string;
     email: string;
+    subject: string;
+    templatePath: string;
+    token: string | number;
+    confirmationUrl?: string;
 }
 
 @Exclude()

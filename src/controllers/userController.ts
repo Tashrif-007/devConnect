@@ -5,14 +5,12 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { UserResponseDTO } from '../dto/userDTO';
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
-import { authenticatedRequest } from '../middlewares/authentication';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class UserController {
-    private userService: UserService;
-
-    constructor() {
-        this.userService = new UserService();
-    }
+    constructor(private userService: UserService) {}
 
     createUser = async (req: Request, res: Response, next: NextFunction) => {
         try {

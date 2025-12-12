@@ -4,7 +4,10 @@ import { Category } from '../entity/categoryEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
 import { PaginationQuery } from '../dto/paginationDTO';
+import 'reflect-metadata';
+import { injectable } from 'tsyringe';
 
+@injectable()
 export class StoryRepository {
     private storyRepository = AppDataSource.getRepository(Story);
 

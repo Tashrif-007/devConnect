@@ -5,10 +5,13 @@ import { UnauthorizedError } from '../errors/errors';
 import { ERROR_MESSAGES } from '../constants/messages';
 
 const jwtSecret = envValues.JWT_SECRET!;
-const jwtExpiry = envValues.JWT_EXPIRY!;
+const jwtExpiry = envValues.JWT_EXPIRY;
 
-export const signToken = (jwtPayload: jwtPayload): string => {
-    return jwt.sign(jwtPayload, jwtSecret, { expiresIn: '30d' });
+export const signToken = (
+    jwtPayload: jwtPayload,
+    expiresIn: number = jwtExpiry
+): string => {
+    return jwt.sign(jwtPayload, jwtSecret, { expiresIn });
 };
 
 export const verifyToken = (token: string): jwtPayload => {

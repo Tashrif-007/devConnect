@@ -13,9 +13,10 @@ import {
     checkRequiredRoles,
 } from '../middlewares/authorization';
 import { UserRole } from '../enums';
+import { container } from 'tsyringe';
 
 const userRouter = express.Router();
-const userController = new UserController();
+const userController = container.resolve(UserController);
 
 userRouter.get(
     '/',

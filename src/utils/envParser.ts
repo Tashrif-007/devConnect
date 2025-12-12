@@ -12,7 +12,7 @@ export const envValues = {
     VERSION: process.env.VERSION,
     NODE_ENV: process.env.NODE_ENV,
     JWT_SECRET: process.env.JWT_SECRET,
-    JWT_EXPIRY: process.env.JWT_EXPIRY,
+    JWT_EXPIRY: Number(process.env.JWT_EXPIRY),
     SMTP_HOST: process.env.SMTP_HOST,
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_SECURE: process.env.SMTP_SECURE,
