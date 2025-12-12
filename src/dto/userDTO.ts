@@ -43,6 +43,24 @@ export const UpdateRoleSchema = z.object({
     }),
 });
 
+export const UpdateProfileSchema = z
+    .object({
+        name: z
+            .string({ message: 'Name is required' })
+            .trim()
+            .min(1, 'Name cannot be empty')
+            .max(100, 'Name must not exceed 100 characters')
+            .optional(),
+        profilePictureUrl: z
+            .url('Invalid profile picture URL')
+            .optional()
+            .nullable(),
+    })
+    .strict()
+    .refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field is required for update',
+    });
+
 export const UserIdParamSchema = z.object({
     userId: z.uuidv4('Invalid user ID format'),
 });
@@ -50,6 +68,7 @@ export const UserIdParamSchema = z.object({
 export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
 export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
 export type UpdateRoleDTO = z.infer<typeof UpdateRoleSchema>;
+export type UpdateProfileDTO = z.infer<typeof UpdateProfileSchema>;
 export type UserIdParam = z.infer<typeof UserIdParamSchema>;
 
 @Exclude()
@@ -71,9 +90,12 @@ export class UserResponseDTO extends BaseResponseDTO {
 
     @Expose()
     isEmailConfirmed: boolean;
-    
+
     @Expose()
     role: UserRole;
+
+    @Expose()
+    profilePictureUrl?: string;
 
     @Expose()
     @Type(() => Object)
