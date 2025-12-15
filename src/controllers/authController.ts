@@ -87,6 +87,7 @@ export class AuthController {
             await this.authService.changePassword(userId!, password);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
+                    null,
                     AUTH_RESPONSE_MESSAGES.PASSWORD_CHANGE_REQUESTED,
                 ),
             );
