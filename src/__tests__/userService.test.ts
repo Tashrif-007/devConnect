@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { UserService } from '../services/userService';
 import { UserRepository } from '../repositories/userRepository';
 import {
@@ -8,6 +9,8 @@ import {
 } from '../dto/userDTO';
 import { USER_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError, NotFoundError } from '../errors/errors';
+
+jest.mock('../config/dataSource');
 import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 import { User } from '../entity/userEntity';
 import { UserRole, SortDirection, UserOrderBy } from '../enums';

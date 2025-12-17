@@ -8,6 +8,8 @@ import {
     UpdateStoryDTO,
     StoryResponseDTO,
 } from '../dto/storyDTO';
+
+jest.mock('../config/dataSource');
 import { Story } from '../entity/storyEntity';
 import { User } from '../entity/userEntity';
 import { Category } from '../entity/categoryEntity';

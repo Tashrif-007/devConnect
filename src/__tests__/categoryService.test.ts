@@ -6,6 +6,8 @@ import { Category } from '../entity/categoryEntity';
 import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError } from '../errors/errors';
 
+jest.mock('../config/dataSource');
+
 describe('CategoryService', () => {
     let categoryService: CategoryService;
     let mockCategoryRepository: jest.Mocked<CategoryRepository>;

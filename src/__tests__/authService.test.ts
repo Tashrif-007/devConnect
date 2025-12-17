@@ -24,6 +24,7 @@ jest.mock('bcrypt');
 jest.mock('crypto');
 jest.mock('../utils/jwtUtil');
 jest.mock('../utils/envParser');
+jest.mock('../config/dataSource');
 
 describe('AuthService', () => {
     let authService: AuthService;

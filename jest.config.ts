@@ -4,6 +4,7 @@ module.exports = {
     roots: ['<rootDir>/src'],
     testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
     moduleFileExtensions: ['ts', 'js', 'json'],
+    setupFiles: ['<rootDir>/src/__tests__/setup.ts'],
     collectCoverageFrom: [
         'src/controllers/*.ts',
         'src/services/*.ts',
