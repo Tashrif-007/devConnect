@@ -1,13 +1,21 @@
 import 'reflect-metadata';
 import { AiService } from '../services/aiService';
 import { OpenRouterError } from '../errors/errors';
+import * as envParserModule from '../utils/envParser';
 
+jest.mock('../utils/envParser');
+jest.mock('../config/dataSource');
 global.fetch = jest.fn();
 
 describe('AiService', () => {
     let aiService: AiService;
 
     beforeEach(() => {
+        jest.mocked(envParserModule.envValues as any).OPENROUTER_ENDPOINT =
+            'https://openrouter.ai/api/v1/chat/completions';
+        jest.mocked(envParserModule.envValues as any).OPENROUTER_API_KEY =
+            'test-api-key';
+
         aiService = new AiService();
         jest.clearAllMocks();
     });
