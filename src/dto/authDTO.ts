@@ -101,6 +101,10 @@ export interface jwtPayload extends JwtPayload {
     username: string;
     role: UserRole;
 }
+export interface LoginResponseDTO {
+    token: string;
+    user: AuthResponseDTO;
+}
 
 export interface EmailConfirmationDTO {
     userId: string;
@@ -134,22 +138,4 @@ export class AuthResponseDTO extends BaseResponseDTO {
 
     @Expose()
     profilePictureUrl?: string;
-}
-
-@Exclude()
-export class LoginResponseDTO extends BaseResponseDTO {
-    @Expose()
-    token: string;
-
-    @Expose()
-    userId: string;
-
-    @Expose()
-    email: string;
-
-    @Expose()
-    username: string;
-
-    @Expose()
-    role: UserRole;
 }

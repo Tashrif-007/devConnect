@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
         "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/config/dataSource.ts",
         "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate",
         "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/config/dataSource.ts",
@@ -45,6 +47,7 @@
     "devDependencies": {
         "@types/ejs": "^3.1.5",
         "@types/express": "^5.0.5",
+        "@types/jest": "^30.0.0",
         "@types/node": "^24.10.1",
         "@types/nodemailer": "^7.0.4",
         "@types/swagger-jsdoc": "^6.0.3",
@@ -54,7 +57,9 @@
         "eslint": "^9.39.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.4",
+        "jest": "^30.2.0",
         "prettier": "^3.6.2",
+        "ts-jest": "^29.4.6",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
         "tsconfig-paths": "^4.2.0",

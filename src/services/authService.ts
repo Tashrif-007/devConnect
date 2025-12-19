@@ -7,6 +7,7 @@ import {
     LoginDTO,
     jwtPayload,
     EmailConfirmationDTO,
+    LoginResponseDTO,
 } from '../dto/authDTO';
 import bcrypt from 'bcrypt';
 import { UserService } from './userService';
@@ -90,7 +91,7 @@ export class AuthService {
         return userDTO;
     }
 
-    async login(loginData: LoginDTO) {
+    async login(loginData: LoginDTO): Promise<LoginResponseDTO> {
         const user = await this.userService.getUserByEmail(loginData.email);
 
         if (!user?.isEmailConfirmed) {
