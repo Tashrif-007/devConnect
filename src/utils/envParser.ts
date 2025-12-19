@@ -20,6 +20,7 @@ export const envValues = {
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
     APP_URL: process.env.APP_URL,
+    FRONTEND_URL: process.env.FRONTEND_URL,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     OPENROUTER_ENDPOINT: process.env.OPENROUTER_ENDPOINT,

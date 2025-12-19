@@ -6,6 +6,7 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { AUTH_RESPONSE_MESSAGES } from '../constants/messages';
 import { LoginDTO } from '../dto/authDTO';
 import { authenticatedRequest } from '../middlewares/authentication';
+import { envValues } from '../utils/envParser';
 
 @injectable()
 export class AuthController {
@@ -44,13 +45,8 @@ export class AuthController {
     confirmEmail = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { token } = req.params;
-            const result = await this.authService.confirmEmail(token);
-            res.status(HttpStatus.OK).json(
-                ResponseFormatter.success(
-                    result,
-                    AUTH_RESPONSE_MESSAGES.EMAIL_CONFIRMED,
-                ),
-            );
+            await this.authService.confirmEmail(token);
+            res.redirect(`${envValues.FRONTEND_URL}/email-verified`);
         } catch (error) {
             next(error);
         }
