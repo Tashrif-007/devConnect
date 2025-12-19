@@ -13,6 +13,7 @@ import adminRouter from './routes/adminRoute';
 import { apiLimiter } from './middlewares/rateLimiter';
 import categoryRouter from './routes/categoryRoute';
 import { swaggerOptions, swaggerUIOptions } from './config/swagger';
+import cors from 'cors';
 
 const PORT = envValues.PORT || 3000;
 const VERSION = envValues.VERSION;
@@ -22,6 +23,9 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
 app.use(apiLimiter);
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', swaggerUi.setup(swaggerSpec, swaggerUIOptions));
