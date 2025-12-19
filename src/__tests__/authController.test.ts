@@ -46,6 +46,7 @@ describe('AuthController', () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn().mockReturnThis(),
             send: jest.fn().mockReturnThis(),
+            redirect: jest.fn().mockReturnThis(),
         };
 
         mockNext = jest.fn();
@@ -185,7 +186,7 @@ describe('AuthController', () => {
     });
 
     describe('confirmEmail', () => {
-        it('should successfully confirm email and return 200 OK', async () => {
+        it('should successfully confirm email and redirect to email-verified page', async () => {
             const token = 'email-confirmation-token-123';
 
             const mockUserResponse = {
@@ -209,13 +210,8 @@ describe('AuthController', () => {
             );
 
             expect(mockAuthService.confirmEmail).toHaveBeenCalledWith(token);
-            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-            expect(mockResponse.json).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    success: true,
-                    data: mockUserResponse,
-                    message: AUTH_RESPONSE_MESSAGES.EMAIL_CONFIRMED,
-                }),
+            expect(mockResponse.redirect).toHaveBeenCalledWith(
+                expect.stringContaining('/email-verified'),
             );
             expect(mockNext).not.toHaveBeenCalled();
         });

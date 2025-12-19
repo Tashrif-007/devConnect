@@ -85,7 +85,7 @@ export class AuthService {
                 '../templates/emailConfirmation.ejs',
             ),
             token,
-            confirmationUrl: `${envValues.APP_URL || 'http://localhost:3000'}/auth/confirm-email/${token}`,
+            confirmationUrl: `${envValues.APP_URL || 'http://localhost:3000'}`,
         });
 
         return userDTO;
@@ -162,7 +162,7 @@ export class AuthService {
                 '../templates/emailConfirmation.ejs',
             ),
             token,
-            confirmationUrl: `${envValues.APP_URL || 'http://localhost:3000'}/auth/confirm-email/${token}`,
+            confirmationUrl: `${envValues.APP_URL || 'http://localhost:3000'}`,
         });
 
         return {

@@ -204,9 +204,7 @@ describe('AuthService', () => {
 
             expect(mockEmailService.sendConfirmationEmail).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    confirmationUrl: expect.stringContaining(
-                        'http://localhost:3000/auth/confirm-email/',
-                    ),
+                    confirmationUrl: 'http://localhost:3000',
                 }),
             );
             expect(result).toBe(mockUser);
@@ -441,9 +439,7 @@ describe('AuthService', () => {
 
             expect(mockEmailService.sendConfirmationEmail).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    confirmationUrl: expect.stringContaining(
-                        'http://localhost:3000/auth/confirm-email/',
-                    ),
+                    confirmationUrl: 'http://localhost:3000',
                 }),
             );
             expect(result.message).toBe(
