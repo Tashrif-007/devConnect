@@ -20,7 +20,10 @@ export const USER_RESPONSE_MESSAGES = {
 
 export const STORY_RESPONSE_MESSAGES = createResourceMessages('Story');
 
-export const CATEGORY_RESPONSE_MESSAGES = createResourceMessages('Category');
+export const CATEGORY_RESPONSE_MESSAGES = {
+    ...createResourceMessages('Category'),
+    TRENDING_RETRIEVED: 'Trending categories retrieved successfully',
+};
 
 export const SUMMARY_RESPONSE_MESSAGES = createResourceMessages('Summary');
 

@@ -61,4 +61,23 @@ export class CategoryController {
             next(error);
         }
     };
+
+    getTrendingCategories = async (
+        _req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const trendingCategories =
+                await this.categoryService.getTrendingCategories();
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    trendingCategories,
+                    CATEGORY_RESPONSE_MESSAGES.TRENDING_RETRIEVED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
 }
