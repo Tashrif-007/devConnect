@@ -36,3 +36,15 @@ export class CategoryResponseDTO extends BaseResponseDTO {
     @Expose()
     createdAt: Date;
 }
+
+@Exclude()
+export class TrendingCategoryDTO extends BaseResponseDTO {
+    @Expose()
+    categoryId: string;
+
+    @Expose()
+    name: string;
+
+    @Expose()
+    storyCount: number;
+}
