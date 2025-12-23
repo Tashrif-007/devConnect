@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { Exclude, Expose, Type, Transform } from 'class-transformer';
 import { BaseResponseDTO } from './baseDTO';
 import { PaginationMeta } from './paginationDTO';
+import { UserResponseDTO } from './userDTO';
 
 export const CreateStorySchema = z.object({
     title: z
@@ -49,6 +50,10 @@ export class StoryResponseDTO extends BaseResponseDTO {
 
     @Expose()
     body: string;
+
+    @Expose()
+    @Type(() => UserResponseDTO)
+    user?: UserResponseDTO;
 
     @Expose()
     userId: string;
