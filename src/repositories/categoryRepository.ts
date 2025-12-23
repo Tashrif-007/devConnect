@@ -24,7 +24,7 @@ export class CategoryRepository {
 
     async validateCategoryIds(categoryIds: string[]): Promise<boolean> {
         if (!categoryIds || categoryIds.length === 0) {
-            return true; 
+            return true;
         }
 
         const foundCategories = await this.categoryRepository.find({
@@ -49,5 +49,34 @@ export class CategoryRepository {
 
     async delete(categoryId: string): Promise<UpdateResult> {
         return this.categoryRepository.softDelete(categoryId);
+    }
+
+    async getTrendingCategories(
+        limit: number = 5,
+    ): Promise<
+        Array<{ categoryId: string; name: string; storyCount: number }>
+    > {
+        const result = await this.categoryRepository
+            .createQueryBuilder('category')
+            .leftJoinAndSelect(
+                'category.stories',
+                'story',
+                'story.deletedAt IS NULL',
+            )
+            .select('category.categoryId', 'categoryId')
+            .addSelect('category.name', 'name')
+            .addSelect('COUNT(story.storyId)', 'storyCount')
+            .where('category.deletedAt IS NULL')
+            .groupBy('category.categoryId')
+            .addGroupBy('category.name')
+            .orderBy('COUNT(story.storyId)', 'DESC')
+            .limit(limit)
+            .getRawMany();
+
+        return result.map((row) => ({
+            categoryId: row.categoryId,
+            name: row.name,
+            storyCount: parseInt(row.storyCount, 10),
+        }));
     }
 }
