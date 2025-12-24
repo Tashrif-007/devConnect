@@ -615,9 +615,28 @@ describe('AuthService', () => {
     });
 
     describe('updatePassword', () => {
+        it('should throw ConflictError if newPassword does not match confirmPassword', async () => {
+            const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const newPassword = 'NewPass123!';
+            const confirmPassword = 'DifferentPass123!';
+            const sessionToken = 'valid-session-token';
+
+            await expect(
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
+            ).rejects.toThrow(ConflictError);
+            expect(mockAuthRepository.findByUserId).not.toHaveBeenCalled();
+            expect(mockAuthRepository.update).not.toHaveBeenCalled();
+        });
+
         it('should update password with valid session token', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
             const mockAuth = createMockAuth({
                 isUsed: false,
@@ -637,6 +656,7 @@ describe('AuthService', () => {
             const result = await authService.updatePassword(
                 userId,
                 newPassword,
+                confirmPassword,
                 sessionToken,
             );
 
@@ -655,18 +675,25 @@ describe('AuthService', () => {
         it('should throw NotFoundError if auth record does not exist', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
 
             mockAuthRepository.findByUserId.mockResolvedValue(null);
 
             await expect(
-                authService.updatePassword(userId, newPassword, sessionToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
             ).rejects.toThrow(NotFoundError);
         });
 
         it('should throw UnauthorizedError if token is invalid', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const invalidToken = 'invalid-token';
             const mockAuth = createMockAuth();
 
@@ -677,7 +704,12 @@ describe('AuthService', () => {
             mockAuthRepository.findByUserId.mockResolvedValue(mockAuth);
 
             await expect(
-                authService.updatePassword(userId, newPassword, invalidToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    invalidToken,
+                ),
             ).rejects.toThrow(UnauthorizedError);
             expect(mockAuthRepository.update).not.toHaveBeenCalled();
         });
@@ -685,6 +717,7 @@ describe('AuthService', () => {
         it('should throw UnauthorizedError if token type is not password-reset', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
             const mockAuth = createMockAuth();
 
@@ -695,7 +728,12 @@ describe('AuthService', () => {
             mockAuthRepository.findByUserId.mockResolvedValue(mockAuth);
 
             await expect(
-                authService.updatePassword(userId, newPassword, sessionToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
             ).rejects.toThrow(UnauthorizedError);
             expect(mockAuthRepository.update).not.toHaveBeenCalled();
         });
@@ -703,6 +741,7 @@ describe('AuthService', () => {
         it('should throw UnauthorizedError if code has already been used', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
             const mockAuth = createMockAuth({
                 isUsed: true,
@@ -716,7 +755,12 @@ describe('AuthService', () => {
             mockAuthRepository.findByUserId.mockResolvedValue(mockAuth);
 
             await expect(
-                authService.updatePassword(userId, newPassword, sessionToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
             ).rejects.toThrow(UnauthorizedError);
             expect(mockAuthRepository.update).not.toHaveBeenCalled();
         });
@@ -724,6 +768,7 @@ describe('AuthService', () => {
         it('should throw UnauthorizedError if code has expired', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
             const mockAuth = createMockAuth({
                 isUsed: false,
@@ -737,7 +782,12 @@ describe('AuthService', () => {
             mockAuthRepository.findByUserId.mockResolvedValue(mockAuth);
 
             await expect(
-                authService.updatePassword(userId, newPassword, sessionToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
             ).rejects.toThrow(UnauthorizedError);
             expect(mockAuthRepository.update).not.toHaveBeenCalled();
         });
@@ -745,6 +795,7 @@ describe('AuthService', () => {
         it('should throw UnauthorizedError if codeExpiresAt is null', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'valid-session-token';
             const mockAuth = createMockAuth({
                 isUsed: false,
@@ -758,7 +809,12 @@ describe('AuthService', () => {
             mockAuthRepository.findByUserId.mockResolvedValue(mockAuth);
 
             await expect(
-                authService.updatePassword(userId, newPassword, sessionToken),
+                authService.updatePassword(
+                    userId,
+                    newPassword,
+                    confirmPassword,
+                    sessionToken,
+                ),
             ).rejects.toThrow(UnauthorizedError);
         });
     });
