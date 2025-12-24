@@ -237,8 +237,12 @@ export class AuthService {
     async updatePassword(
         userId: string,
         newPassword: string,
+        confirmPassword: string,
         sessionToken: string,
     ) {
+        if(newPassword !== confirmPassword) {
+            throw new ConflictError(ERROR_MESSAGES.CONFLICT);
+        }
         const auth = await this.authRepository.findByUserId(userId);
         if (!auth) {
             throw new NotFoundError(ERROR_MESSAGES.RESOURCE_NOT_FOUND);

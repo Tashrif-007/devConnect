@@ -80,6 +80,7 @@ export const ValidateCodeSchema = z.object({
 
 export const UpdatePasswordWithTokenSchema = z.object({
     newPassword: passwordSchema,
+    confirmPassword: passwordSchema,
     sessionToken: z.string({ message: 'Session token is required' }),
 });
 

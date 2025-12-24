@@ -117,11 +117,12 @@ export class AuthController {
         next: NextFunction,
     ) => {
         try {
-            const { newPassword, sessionToken } = req.body;
+            const { newPassword, confirmPassword, sessionToken } = req.body;
             const userId = (req as authenticatedRequest).decoded?.userId;
             const result = await this.authService.updatePassword(
                 userId!,
                 newPassword,
+                confirmPassword,
                 sessionToken,
             );
             res.status(HttpStatus.OK).json(
