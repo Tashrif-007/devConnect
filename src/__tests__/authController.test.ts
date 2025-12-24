@@ -486,13 +486,14 @@ describe('AuthController', () => {
         it('should successfully update password and return 200 OK', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'session-token-123';
 
             const mockUpdateResponse = {
                 message: 'Password updated successfully',
             };
 
-            mockRequest.body = { newPassword, sessionToken };
+            mockRequest.body = { newPassword, confirmPassword, sessionToken };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -509,6 +510,7 @@ describe('AuthController', () => {
             expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
                 userId,
                 newPassword,
+                confirmPassword,
                 sessionToken,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
@@ -525,10 +527,11 @@ describe('AuthController', () => {
         it('should pass error to next middleware if session token is invalid', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
             const newPassword = 'NewPass123!';
+            const confirmPassword = 'NewPass123!';
             const sessionToken = 'invalid-token';
             const error = new Error('Invalid or expired session token');
 
-            mockRequest.body = { newPassword, sessionToken };
+            mockRequest.body = { newPassword, confirmPassword, sessionToken };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -543,6 +546,7 @@ describe('AuthController', () => {
             expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
                 userId,
                 newPassword,
+                confirmPassword,
                 sessionToken,
             );
             expect(mockNext).toHaveBeenCalledWith(error);
