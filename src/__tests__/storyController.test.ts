@@ -3,6 +3,9 @@ import { StoryController } from '../controllers/storyController';
 import { StoryService } from '../services/storyService';
 import { Request, Response } from 'express';
 import { PaginatedResponseDTO, PaginationMeta } from '../dto/paginationDTO';
+import { StoryResponseDTO } from '../dto/storyDTO';
+import { VoteCountResponseDTO } from '../dto/voteDTO';
+import { UserResponseDTO } from '../dto/userDTO';
 import { HttpStatus } from '../constants/httpStatus';
 import { ResponseFormatter } from '../utils/apiResponse';
 import {
@@ -36,6 +39,8 @@ describe('StoryController', () => {
         deletedAt: null,
         auth: {} as Auth,
         stories: [],
+        votes: [],
+        comments: [],
         ...overrides,
     });
 
@@ -57,11 +62,43 @@ describe('StoryController', () => {
         summary: 'Story summary',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
-        deletedAt: null as any,
+        deletedAt: new Date('2024-01-01'),
         user: createMockUser(),
         categories: [createMockCategory()],
+        votes: [],
+        comments: [],
         ...overrides,
     });
+
+    const createMockStoryResponseDTO = (
+        overrides?: Record<string, unknown>,
+    ): StoryResponseDTO =>
+        ({
+            storyId: 'story-123',
+            title: 'My First Story',
+            body: 'This is the body of my story',
+            userId: '123e4567-e89b-12d3-a456-426614174000',
+            summary: 'Story summary',
+            user: {
+                userId: '123e4567-e89b-12d3-a456-426614174000',
+                name: 'John Doe',
+                username: 'johndoe',
+                email: 'john@example.com',
+                joinDate: new Date('2024-01-01'),
+                isEmailConfirmed: true,
+                role: UserRole.USER,
+            } as UserResponseDTO,
+            categoryNames: ['Technology'],
+            votes: {
+                upvotes: 0,
+                downvotes: 0,
+                userVote: null,
+            } as VoteCountResponseDTO,
+            comments: [],
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            ...(overrides as Record<string, unknown>),
+        }) as unknown as StoryResponseDTO;
 
     beforeEach(() => {
         mockStoryService = {
@@ -101,7 +138,7 @@ describe('StoryController', () => {
 
     describe('createStory', () => {
         it('should create a story and return 201 status', async () => {
-            const mockStory = createMockStory();
+            const mockStoryDTO = createMockStoryResponseDTO();
             const createStoryDTO = {
                 title: 'My Story',
                 body: 'Story body content',
@@ -109,7 +146,7 @@ describe('StoryController', () => {
             };
 
             mockRequest.body = createStoryDTO;
-            mockStoryService.createStory.mockResolvedValue(mockStory);
+            mockStoryService.createStory.mockResolvedValue(mockStoryDTO);
 
             await storyController.createStory(
                 mockRequest as authenticatedRequest,
@@ -129,7 +166,7 @@ describe('StoryController', () => {
             );
             expect(mockResponse.json).toHaveBeenCalledWith(
                 ResponseFormatter.success(
-                    mockStory,
+                    mockStoryDTO,
                     STORY_RESPONSE_MESSAGES.CREATED,
                 ),
             );
@@ -137,7 +174,7 @@ describe('StoryController', () => {
         });
 
         it('should set userId from decoded token', async () => {
-            const mockStory = createMockStory();
+            const mockStoryDTO = createMockStoryResponseDTO();
             const createStoryDTO = {
                 title: 'My Story',
                 body: 'Story body content',
@@ -153,7 +190,7 @@ describe('StoryController', () => {
                 iat: Math.floor(Date.now() / 1000),
             };
 
-            mockStoryService.createStory.mockResolvedValue(mockStory);
+            mockStoryService.createStory.mockResolvedValue(mockStoryDTO);
 
             await storyController.createStory(
                 mockRequest as authenticatedRequest,
@@ -188,8 +225,11 @@ describe('StoryController', () => {
     describe('getAllStories', () => {
         it('should retrieve all stories with pagination', async () => {
             const mockStories = [
-                createMockStory(),
-                createMockStory({ storyId: 'story-2', title: 'Second Story' }),
+                createMockStoryResponseDTO(),
+                createMockStoryResponseDTO({
+                    storyId: 'story-2',
+                    title: 'Second Story',
+                }),
             ];
 
             const paginationMeta: PaginationMeta = {
@@ -246,10 +286,10 @@ describe('StoryController', () => {
     describe('getStoryById', () => {
         it('should retrieve a story by ID successfully', async () => {
             const storyId = 'story-123';
-            const mockStory = createMockStory();
+            const mockStoryDTO = createMockStoryResponseDTO();
 
             mockRequest.params = { storyId };
-            mockStoryService.getStoryById.mockResolvedValue(mockStory);
+            mockStoryService.getStoryById.mockResolvedValue(mockStoryDTO);
 
             await storyController.getStoryById(
                 mockRequest as Request,
@@ -261,7 +301,7 @@ describe('StoryController', () => {
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
                 ResponseFormatter.success(
-                    mockStory,
+                    mockStoryDTO,
                     STORY_RESPONSE_MESSAGES.RETRIEVED,
                 ),
             );
@@ -291,12 +331,14 @@ describe('StoryController', () => {
         it('should update a story successfully', async () => {
             const storyId = 'story-123';
             const updateData = { title: 'Updated Title' };
-            const updatedStory = createMockStory({ title: 'Updated Title' });
+            const updatedStoryDTO = createMockStoryResponseDTO({
+                title: 'Updated Title',
+            });
 
             mockRequest.params = { storyId };
             mockRequest.body = updateData;
 
-            mockStoryService.updateStory.mockResolvedValue(updatedStory);
+            mockStoryService.updateStory.mockResolvedValue(updatedStoryDTO);
 
             await storyController.updateStory(
                 mockRequest as Request,
@@ -311,7 +353,7 @@ describe('StoryController', () => {
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
                 ResponseFormatter.success(
-                    updatedStory,
+                    updatedStoryDTO,
                     STORY_RESPONSE_MESSAGES.UPDATED,
                 ),
             );
@@ -321,7 +363,7 @@ describe('StoryController', () => {
         it('should update story body and regenerate summary', async () => {
             const storyId = 'story-123';
             const updateData = { body: 'Updated body content' };
-            const updatedStory = createMockStory({
+            const updatedStoryDTO = createMockStoryResponseDTO({
                 body: 'Updated body content',
                 summary: 'New AI summary',
             });
@@ -329,7 +371,7 @@ describe('StoryController', () => {
             mockRequest.params = { storyId };
             mockRequest.body = updateData;
 
-            mockStoryService.updateStory.mockResolvedValue(updatedStory);
+            mockStoryService.updateStory.mockResolvedValue(updatedStoryDTO);
 
             await storyController.updateStory(
                 mockRequest as Request,
@@ -409,12 +451,12 @@ describe('StoryController', () => {
     describe('regenerateSummary', () => {
         it('should regenerate story summary successfully', async () => {
             const storyId = 'story-123';
-            const mockStory = createMockStory({
+            const mockStoryDTO = createMockStoryResponseDTO({
                 summary: 'Newly regenerated summary',
             });
 
             mockRequest.params = { storyId };
-            mockStoryService.regenerateSummary.mockResolvedValue(mockStory);
+            mockStoryService.regenerateSummary.mockResolvedValue(mockStoryDTO);
 
             await storyController.regenerateSummary(
                 mockRequest as Request,
@@ -428,7 +470,7 @@ describe('StoryController', () => {
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
                 ResponseFormatter.success(
-                    mockStory,
+                    mockStoryDTO,
                     SUMMARY_RESPONSE_MESSAGES.CREATED,
                 ),
             );

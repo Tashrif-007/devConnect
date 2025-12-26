@@ -1,4 +1,6 @@
 import { StoryRepository } from '../repositories/storyRepository';
+import { VoteService } from './voteService';
+import { CommentService } from './commentService';
 import { CategoryService } from './categoryService';
 import {
     CreateStoryDTO,
@@ -27,6 +29,8 @@ import { injectable } from 'tsyringe';
 export class StoryService {
     constructor(
         private storyRepository: StoryRepository,
+        private voteService: VoteService,
+        private commentService: CommentService,
         private categoryService: CategoryService,
         private aiService: AiService,
     ) {}
@@ -36,6 +40,25 @@ export class StoryService {
             throw new NotFoundError(STORY_RESPONSE_MESSAGES.NOT_FOUND);
         }
         return story;
+    }
+
+    private async enrichStoryWithVotesAndComments(
+        story: Story,
+    ): Promise<StoryResponseDTO> {
+        const voteStats = await this.voteService.getVoteStatsOnly(
+            story.storyId,
+        );
+        const comments = await this.commentService.getCommentsByStoryOnly(
+            story.storyId,
+            1,
+            10,
+        );
+        const enrichedData = {
+            ...story,
+            votes: voteStats,
+            comments,
+        };
+        return StoryResponseDTO.fromEntity(enrichedData);
     }
 
     async createStory(storyData: CreateStoryDTO): Promise<StoryResponseDTO> {
@@ -55,7 +78,7 @@ export class StoryService {
                 storyData.summary = await this.aiService.summarize(
                     storyData.body,
                 );
-            } catch (error) {
+            } catch {
                 storyData.summary = undefined;
             }
         }
@@ -76,9 +99,14 @@ export class StoryService {
             ? await this.storyRepository.search(paginationDTO)
             : await this.storyRepository.findAll(paginationDTO);
 
-        const stories = StoryResponseDTO.fromEntities(result.data);
+        const enrichedStories = await Promise.all(
+            result.data.map((story: Story) =>
+                this.enrichStoryWithVotesAndComments(story),
+            ),
+        );
+
         return createPaginatedResponse(
-            stories,
+            enrichedStories,
             result.total,
             paginationDTO.page,
             paginationDTO.itemsPerPage,
@@ -88,7 +116,7 @@ export class StoryService {
     async getStoryById(storyId: string): Promise<StoryResponseDTO> {
         const story = await this.storyRepository.findById(storyId);
         this.ensureExists(story);
-        return StoryResponseDTO.fromEntity(story!);
+        return this.enrichStoryWithVotesAndComments(story!);
     }
 
     async updateStory(storyId: string, storyData: UpdateStoryDTO) {
@@ -107,7 +135,7 @@ export class StoryService {
                 storyData.summary = await this.aiService.summarize(
                     storyData.body,
                 );
-            } catch (error) {
+            } catch {
                 storyData.summary = undefined;
             }
         }
@@ -116,7 +144,7 @@ export class StoryService {
             storyData,
         );
         this.ensureExists(story);
-        return StoryResponseDTO.fromEntity(story!);
+        return this.enrichStoryWithVotesAndComments(story!);
     }
 
     async deleteStory(storyId: string): Promise<void> {
@@ -140,8 +168,8 @@ export class StoryService {
                 },
             );
             this.ensureExists(updatedStory);
-            return StoryResponseDTO.fromEntity(updatedStory!);
-        } catch (error) {
+            return this.enrichStoryWithVotesAndComments(updatedStory!);
+        } catch {
             throw new OpenRouterError(
                 ERROR_MESSAGES.BAD_GATEWAY,
                 HttpStatus.BAD_GATEWAY,

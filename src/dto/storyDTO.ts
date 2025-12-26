@@ -3,6 +3,8 @@ import { Exclude, Expose, Type, Transform } from 'class-transformer';
 import { BaseResponseDTO } from './baseDTO';
 import { PaginationMeta } from './paginationDTO';
 import { UserResponseDTO } from './userDTO';
+import { CommentResponseDTO } from './commentDTO';
+import { VoteCountResponseDTO } from './voteDTO';
 
 export const CreateStorySchema = z.object({
     title: z
@@ -63,10 +65,20 @@ export class StoryResponseDTO extends BaseResponseDTO {
 
     @Expose()
     @Transform(
-        ({ obj }: { obj: any }) =>
-            obj.categories?.map((cat: any) => cat.name) || [],
+        ({ obj }: { obj: Record<string, unknown> }) =>
+            (obj.categories as Array<{ name: string }> | undefined)?.map(
+                (cat: { name: string }) => cat.name,
+            ) || [],
     )
     categoryNames?: string[];
+
+    @Expose()
+    @Type(() => VoteCountResponseDTO)
+    votes?: VoteCountResponseDTO;
+
+    @Expose()
+    @Type(() => CommentResponseDTO)
+    comments?: CommentResponseDTO[];
 
     @Expose()
     createdAt: Date;
