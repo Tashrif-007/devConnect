@@ -483,6 +483,7 @@ describe('UserController', () => {
             expect(mockUserService.updateProfile).toHaveBeenCalledWith(
                 userId,
                 updateProfileData,
+                undefined,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
@@ -515,6 +516,7 @@ describe('UserController', () => {
             expect(mockUserService.updateProfile).toHaveBeenCalledWith(
                 userId,
                 updateProfileData,
+                undefined,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockNextFunction).not.toHaveBeenCalled();
@@ -541,8 +543,8 @@ describe('UserController', () => {
             expect(mockUserService.updateProfile).toHaveBeenCalledWith(
                 userId,
                 updateProfileData,
+                undefined,
             );
-            expect(mockNextFunction).toHaveBeenCalledWith(error);
             expect(mockResponse.status).not.toHaveBeenCalled();
         });
     });

@@ -15,10 +15,12 @@ import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 import { User } from '../entity/userEntity';
 import { UserRole, SortDirection, UserOrderBy } from '../enums';
 import { Auth } from '../entity/authEntity';
+import { CloudinaryService } from '../services/cloudinaryService';
 
 describe('UserService', () => {
     let userService: UserService;
     let mockUserRepository: jest.Mocked<UserRepository>;
+    let mockCloudinaryService: jest.Mocked<CloudinaryService>;
 
     const createMockUser = (overrides?: Partial<User>): User => ({
         userId: '123e4567-e89b-12d3-a456-426614174000',
@@ -49,7 +51,15 @@ describe('UserService', () => {
             softDelete: jest.fn(),
         } as unknown as jest.Mocked<UserRepository>;
 
-        userService = new UserService(mockUserRepository);
+        mockCloudinaryService = {
+            uploadImage: jest.fn(),
+            deleteImage: jest.fn(),
+        } as jest.Mocked<CloudinaryService>;
+
+        userService = new UserService(
+            mockUserRepository,
+            mockCloudinaryService,
+        );
     });
 
     describe('createUser', () => {
@@ -234,10 +244,10 @@ describe('UserService', () => {
 
         it('should use default values for missing pagination parameters', async () => {
             const paginationDTO: PaginationQuery = {
-                page: undefined as any,
-                itemsPerPage: undefined as any,
-                sortBy: undefined as any,
-                orderBy: undefined as any,
+                page: undefined as unknown as number,
+                itemsPerPage: undefined as unknown as number,
+                sortBy: undefined as unknown as SortDirection,
+                orderBy: undefined as unknown as UserOrderBy,
             };
             const mockUsers = [createMockUser()];
 
@@ -440,6 +450,43 @@ describe('UserService', () => {
             expect(result.profilePictureUrl).toBe(
                 'https://example.com/new-pic.jpg',
             );
+        });
+
+        it('should upload image to cloudinary and update profile with file', async () => {
+            const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const updateProfileDTO: UpdateProfileDTO = {
+                name: 'Updated Name',
+            };
+            const mockFile = {
+                buffer: Buffer.from('image data'),
+                mimetype: 'image/jpeg',
+            };
+            const cloudinaryUrl =
+                'https://res.cloudinary.com/devconnect/image/upload/v123/profile.jpg';
+            const updatedUser = createMockUser({
+                name: 'Updated Name',
+                profilePictureUrl: cloudinaryUrl,
+            });
+
+            mockCloudinaryService.uploadImage.mockResolvedValue(cloudinaryUrl);
+            mockUserRepository.update.mockResolvedValue(updatedUser);
+
+            const result = await userService.updateProfile(
+                userId,
+                updateProfileDTO,
+                mockFile as unknown as { buffer: Buffer; mimetype: string },
+            );
+
+            expect(mockCloudinaryService.uploadImage).toHaveBeenCalledWith(
+                mockFile,
+                'devconnect/profile-pictures',
+            );
+            expect(mockUserRepository.update).toHaveBeenCalledWith(userId, {
+                ...updateProfileDTO,
+                profilePictureUrl: cloudinaryUrl,
+            });
+            expect(result.profilePictureUrl).toBe(cloudinaryUrl);
+            expect(result.name).toBe('Updated Name');
         });
 
         it('should throw NotFoundError if user to update profile does not exist', async () => {
