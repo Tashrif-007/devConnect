@@ -24,6 +24,23 @@ export const CATEGORY_RESPONSE_MESSAGES = createResourceMessages('Category');
 
 export const SUMMARY_RESPONSE_MESSAGES = createResourceMessages('Summary');
 
+export const VOTE_RESPONSE_MESSAGES = {
+    VOTE_ADDED: 'Vote added successfully',
+    VOTE_REMOVED: 'Vote removed successfully',
+    VOTE_UPDATED: 'Vote updated successfully',
+    VOTE_NOT_FOUND: 'Vote not found',
+    VOTE_ALREADY_EXISTS: 'You have already voted on this post',
+    VOTE_STATS_RETRIEVED: 'Vote statistics retrieved successfully',
+};
+
+export const COMMENT_RESPONSE_MESSAGES = {
+    COMMENT_CREATED: 'Comment created successfully',
+    COMMENT_UPDATED: 'Comment updated successfully',
+    COMMENT_DELETED: 'Comment deleted successfully',
+    COMMENT_NOT_FOUND: 'Comment not found',
+    COMMENTS_RETRIEVED: 'Comments retrieved successfully',
+};
+
 export const AUTH_RESPONSE_MESSAGES = {
     SIGNUP_SUCCESS: 'User registered successfully',
     LOGIN_SUCCESS: 'Login successful',
