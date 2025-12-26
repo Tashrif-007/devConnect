@@ -40,11 +40,13 @@ describe('AuthService', () => {
         email: 'john@example.com',
         joinDate: new Date('2024-01-01'),
         role: UserRole.USER,
-        isEmailConfirmed: false,
+        isEmailConfirmed: true,
         profilePictureUrl: undefined,
         deletedAt: null,
         auth: {} as Auth,
         stories: [],
+        votes: [],
+        comments: [],
         ...overrides,
     });
 

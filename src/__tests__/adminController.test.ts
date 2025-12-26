@@ -29,6 +29,8 @@ describe('AdminController', () => {
         deletedAt: null,
         auth: {} as Auth,
         stories: [],
+        votes: [],
+        comments: [],
         ...overrides,
     });
 

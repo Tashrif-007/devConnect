@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { StoryService } from '../services/storyService';
 import { StoryRepository } from '../repositories/storyRepository';
+import { VoteService } from '../services/voteService';
+import { CommentService } from '../services/commentService';
 import { CategoryService } from '../services/categoryService';
 import { AiService } from '../services/aiService';
 import {
@@ -15,10 +17,7 @@ import { User } from '../entity/userEntity';
 import { Category } from '../entity/categoryEntity';
 import { UserRole, SortDirection, StoryOrderBy } from '../enums';
 import { Auth } from '../entity/authEntity';
-import {
-    PaginatedResponseDTO,
-    PaginationQuery,
-} from '../dto/paginationDTO';
+import { PaginatedResponseDTO, PaginationQuery } from '../dto/paginationDTO';
 import {
     NotFoundError,
     ValidationError,
@@ -29,6 +28,8 @@ import { STORY_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
 describe('StoryService', () => {
     let storyService: StoryService;
     let mockStoryRepository: jest.Mocked<StoryRepository>;
+    let mockVoteService: jest.Mocked<VoteService>;
+    let mockCommentService: jest.Mocked<CommentService>;
     let mockCategoryService: jest.Mocked<CategoryService>;
     let mockAiService: jest.Mocked<AiService>;
 
@@ -44,6 +45,8 @@ describe('StoryService', () => {
         deletedAt: null,
         auth: {} as Auth,
         stories: [],
+        votes: [],
+        comments: [],
         ...overrides,
     });
 
@@ -52,7 +55,7 @@ describe('StoryService', () => {
         name: 'Technology',
         description: 'Technology stories',
         createdAt: new Date('2024-01-01'),
-        deletedAt: null as any,
+        deletedAt: new Date('2024-01-01'),
         stories: [],
         ...overrides,
     });
@@ -65,9 +68,11 @@ describe('StoryService', () => {
         summary: 'Story summary',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
-        deletedAt: null as any,
+        deletedAt: new Date('2024-01-01'),
         user: createMockUser(),
         categories: [createMockCategory()],
+        votes: [],
+        comments: [],
         ...overrides,
     });
 
@@ -81,6 +86,23 @@ describe('StoryService', () => {
             softDelete: jest.fn(),
         } as unknown as jest.Mocked<StoryRepository>;
 
+        mockVoteService = {
+            getVoteStatsOnly: jest.fn(),
+            addVote: jest.fn(),
+            removeVote: jest.fn(),
+            getVoteStats: jest.fn(),
+            getUserVote: jest.fn(),
+        } as unknown as jest.Mocked<VoteService>;
+
+        mockCommentService = {
+            getCommentsByStoryOnly: jest.fn(),
+            createComment: jest.fn(),
+            getCommentsByStory: jest.fn(),
+            getCommentById: jest.fn(),
+            updateComment: jest.fn(),
+            deleteComment: jest.fn(),
+        } as unknown as jest.Mocked<CommentService>;
+
         mockCategoryService = {
             getInvalidCategoryIds: jest.fn(),
         } as unknown as jest.Mocked<CategoryService>;
@@ -91,6 +113,8 @@ describe('StoryService', () => {
 
         storyService = new StoryService(
             mockStoryRepository,
+            mockVoteService,
+            mockCommentService,
             mockCategoryService,
             mockAiService,
         );
@@ -602,6 +626,66 @@ describe('StoryService', () => {
             await expect(
                 storyService.regenerateSummary(storyId),
             ).rejects.toThrow(ERROR_MESSAGES.BAD_GATEWAY);
+        });
+    });
+
+    describe('story enrichment with votes and comments', () => {
+        it('should enrich story with votes and comments on getStoryById', async () => {
+            const mockStory = createMockStory();
+
+            mockStoryRepository.findById.mockResolvedValue(mockStory);
+            mockVoteService.getVoteStatsOnly.mockResolvedValue({
+                upvotes: 5,
+                downvotes: 2,
+            });
+            mockCommentService.getCommentsByStoryOnly.mockResolvedValue([]);
+
+            const result = await storyService.getStoryById('story-123');
+
+            expect(mockVoteService.getVoteStatsOnly).toHaveBeenCalledWith(
+                'story-123',
+            );
+            expect(
+                mockCommentService.getCommentsByStoryOnly,
+            ).toHaveBeenCalledWith('story-123', 1, 10);
+            expect(result).toBeInstanceOf(StoryResponseDTO);
+            expect(result.votes).toEqual({
+                upvotes: 5,
+                downvotes: 2,
+            });
+        });
+
+        it('should enrich all stories with votes and comments on getAllStories', async () => {
+            const mockStories = [
+                createMockStory(),
+                createMockStory({ storyId: 'story-2' }),
+            ];
+            const paginationDTO: PaginationQuery = {
+                page: 1,
+                itemsPerPage: 10,
+                sortBy: SortDirection.DESC,
+                orderBy: StoryOrderBy.CREATED_AT,
+            };
+
+            mockStoryRepository.findAll.mockResolvedValue({
+                data: mockStories,
+                total: 2,
+            });
+            mockVoteService.getVoteStatsOnly.mockResolvedValue({
+                upvotes: 3,
+                downvotes: 1,
+            });
+            mockCommentService.getCommentsByStoryOnly.mockResolvedValue([]);
+
+            const result = await storyService.getAllStories(paginationDTO);
+
+            expect(mockVoteService.getVoteStatsOnly).toHaveBeenCalledTimes(2);
+            expect(
+                mockCommentService.getCommentsByStoryOnly,
+            ).toHaveBeenCalledTimes(2);
+            expect(result.data).toHaveLength(2);
+            expect(result.data[0].votes).toBeDefined();
+            expect(result.data[0].comments).toBeDefined();
         });
     });
 });
