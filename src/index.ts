@@ -12,6 +12,8 @@ import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
 import { apiLimiter } from './middlewares/rateLimiter';
 import categoryRouter from './routes/categoryRoute';
+import voteRouter from './routes/voteRoute';
+import commentRouter from './routes/commentRoute';
 import { swaggerOptions, swaggerUIOptions } from './config/swagger';
 import cors from 'cors';
 
@@ -23,15 +25,17 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
 app.use(apiLimiter);
-app.use(cors({
-    origin: 'http://localhost:5173'
-}));
+app.use(
+    cors({
+        origin: 'http://localhost:5173',
+    }),
+);
 
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', swaggerUi.setup(swaggerSpec, swaggerUIOptions));
 
 app.use(`${VERSION}/users`, userRouter);
-app.use(`${VERSION}/stories`, storyRouter);
+app.use(`${VERSION}/stories`, storyRouter, voteRouter, commentRouter);
 app.use(`${VERSION}/auth`, authRouter);
 app.use(`${VERSION}/admin`, adminRouter);
 app.use(`${VERSION}/categories`, categoryRouter);
