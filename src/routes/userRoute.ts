@@ -16,6 +16,7 @@ import {
     userUpdateDeleteAuthorization,
     checkRequiredRoles,
 } from '../middlewares/authorization';
+import { uploadSingleImage } from '../config/multer';
 import { UserRole } from '../enums';
 import { container } from 'tsyringe';
 
@@ -30,6 +31,7 @@ userRouter.get(
 );
 userRouter.put(
     '/profile',
+    uploadSingleImage,
     validateRequestBody(UpdateProfileSchema),
     authentication(),
     checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),

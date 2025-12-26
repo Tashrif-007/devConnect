@@ -39,6 +39,9 @@ export class User {
     @Column({ nullable: true })
     profilePictureUrl?: string;
 
+    @Column({ nullable: true })
+    bio?: string;
+
     @DeleteDateColumn()
     deletedAt: Date | null;
 
