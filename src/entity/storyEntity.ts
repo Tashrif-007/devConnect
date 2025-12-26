@@ -7,11 +7,14 @@ import {
     JoinTable,
     ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import { User } from './userEntity';
 import { Category } from './categoryEntity';
+import { Vote } from './voteEntity';
+import { Comment } from './commentEntity';
 
 @Entity({ name: 'Story' })
 export class Story {
@@ -46,4 +49,10 @@ export class Story {
     @ManyToMany(() => Category, (category) => category.stories)
     @JoinTable()
     categories: Category[];
+
+    @OneToMany(() => Vote, (vote) => vote.story, { cascade: true })
+    votes: Vote[];
+
+    @OneToMany(() => Comment, (comment) => comment.story, { cascade: true })
+    comments: Comment[];
 }

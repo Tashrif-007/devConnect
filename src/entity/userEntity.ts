@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { Auth } from './authEntity';
 import { Story } from './storyEntity';
+import { Vote } from './voteEntity';
+import { Comment } from './commentEntity';
 import { UserRole } from '../enums';
 
 @Entity({ name: 'User' })
@@ -45,4 +47,10 @@ export class User {
 
     @OneToMany(() => Story, (story) => story.user)
     stories: Story[];
+
+    @OneToMany(() => Vote, (vote) => vote.user)
+    votes: Vote[];
+
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[];
 }
