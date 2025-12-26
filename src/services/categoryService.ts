@@ -1,9 +1,5 @@
 import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
-import {
-    CategoryDTO,
-    CategoryResponseDTO,
-    TrendingCategoryDTO,
-} from '../dto/categoryDTO';
+import { CategoryDTO, CategoryResponseDTO } from '../dto/categoryDTO';
 import { ConflictError } from '../errors/errors';
 import { CategoryRepository } from '../repositories/categoryRepository';
 import 'reflect-metadata';
@@ -39,13 +35,5 @@ export class CategoryService {
         if (!result.affected) {
             throw new ConflictError(CATEGORY_RESPONSE_MESSAGES.NOT_FOUND);
         }
-    }
-
-    async getTrendingCategories(
-        limit: number = 5,
-    ): Promise<TrendingCategoryDTO[]> {
-        const trendingData =
-            await this.categoryRepository.getTrendingCategories(limit);
-        return TrendingCategoryDTO.fromEntities(trendingData);
     }
 }

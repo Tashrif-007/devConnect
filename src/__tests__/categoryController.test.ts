@@ -7,7 +7,6 @@ import { ResponseFormatter } from '../utils/apiResponse';
 import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { Category } from '../entity/categoryEntity';
 import { ConflictError } from '../errors/errors';
-import { TrendingCategoryDTO } from '../dto/categoryDTO';
 
 describe('CategoryController', () => {
     let categoryController: CategoryController;
@@ -34,7 +33,6 @@ describe('CategoryController', () => {
             getCategoryById: jest.fn(),
             validateCategoryIds: jest.fn(),
             getInvalidCategoryIds: jest.fn(),
-            getTrendingCategories: jest.fn(),
         } as unknown as jest.Mocked<CategoryService>;
 
         categoryController = new CategoryController(mockCategoryService);
@@ -213,84 +211,6 @@ describe('CategoryController', () => {
             );
             expect(mockNextFunction).toHaveBeenCalledWith(error);
             expect(mockResponse.sendStatus).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('getTrendingCategories', () => {
-        it('should retrieve trending categories successfully', async () => {
-            const mockTrendingCategories: TrendingCategoryDTO[] = [
-                {
-                    categoryId: 'cat-1',
-                    name: 'JavaScript',
-                    storyCount: 25,
-                } as TrendingCategoryDTO,
-                {
-                    categoryId: 'cat-2',
-                    name: 'React',
-                    storyCount: 18,
-                } as TrendingCategoryDTO,
-                {
-                    categoryId: 'cat-3',
-                    name: 'TypeScript',
-                    storyCount: 12,
-                } as TrendingCategoryDTO,
-            ];
-
-            mockCategoryService.getTrendingCategories.mockResolvedValue(
-                mockTrendingCategories,
-            );
-
-            await categoryController.getTrendingCategories(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNextFunction,
-            );
-
-            expect(
-                mockCategoryService.getTrendingCategories,
-            ).toHaveBeenCalled();
-            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-            expect(mockResponse.json).toHaveBeenCalledWith(
-                ResponseFormatter.success(
-                    mockTrendingCategories,
-                    CATEGORY_RESPONSE_MESSAGES.TRENDING_RETRIEVED,
-                ),
-            );
-            expect(mockNextFunction).not.toHaveBeenCalled();
-        });
-
-        it('should handle empty trending categories list', async () => {
-            mockCategoryService.getTrendingCategories.mockResolvedValue([]);
-
-            await categoryController.getTrendingCategories(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNextFunction,
-            );
-
-            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-            expect(mockResponse.json).toHaveBeenCalledWith(
-                ResponseFormatter.success(
-                    [],
-                    CATEGORY_RESPONSE_MESSAGES.TRENDING_RETRIEVED,
-                ),
-            );
-            expect(mockNextFunction).not.toHaveBeenCalled();
-        });
-
-        it('should pass error to next middleware on retrieval failure', async () => {
-            const error = new Error('Database error');
-
-            mockCategoryService.getTrendingCategories.mockRejectedValue(error);
-
-            await categoryController.getTrendingCategories(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNextFunction,
-            );
-
-            expect(mockNextFunction).toHaveBeenCalledWith(error);
-            expect(mockResponse.status).not.toHaveBeenCalled();
         });
     });
 });
