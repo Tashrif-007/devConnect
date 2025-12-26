@@ -1,11 +1,7 @@
 import 'reflect-metadata';
 import { CategoryService } from '../services/categoryService';
 import { CategoryRepository } from '../repositories/categoryRepository';
-import {
-    CategoryDTO,
-    CategoryResponseDTO,
-    TrendingCategoryDTO,
-} from '../dto/categoryDTO';
+import { CategoryDTO, CategoryResponseDTO } from '../dto/categoryDTO';
 import { Category } from '../entity/categoryEntity';
 import { CATEGORY_RESPONSE_MESSAGES } from '../constants/messages';
 import { ConflictError } from '../errors/errors';
@@ -34,8 +30,8 @@ describe('CategoryService', () => {
             validateCategoryIds: jest.fn(),
             getInvalidCategoryIds: jest.fn(),
             delete: jest.fn(),
-            getTrendingCategories: jest.fn(),
         } as unknown as jest.Mocked<CategoryRepository>;
+
         categoryService = new CategoryService(mockCategoryRepository);
 
         jest.clearAllMocks();
@@ -194,60 +190,6 @@ describe('CategoryService', () => {
             await expect(
                 categoryService.deleteCategory(categoryId),
             ).rejects.toThrow(CATEGORY_RESPONSE_MESSAGES.NOT_FOUND);
-        });
-    });
-
-    describe('getTrendingCategories', () => {
-        it('should retrieve trending categories successfully', async () => {
-            const mockTrendingData = [
-                { categoryId: 'cat-1', name: 'JavaScript', storyCount: 25 },
-                { categoryId: 'cat-2', name: 'React', storyCount: 18 },
-                { categoryId: 'cat-3', name: 'TypeScript', storyCount: 12 },
-            ];
-
-            mockCategoryRepository.getTrendingCategories.mockResolvedValue(
-                mockTrendingData,
-            );
-
-            const result = await categoryService.getTrendingCategories();
-
-            expect(
-                mockCategoryRepository.getTrendingCategories,
-            ).toHaveBeenCalledWith(5);
-            expect(Array.isArray(result)).toBe(true);
-            expect(result.length).toBe(3);
-            expect(result[0]).toBeInstanceOf(TrendingCategoryDTO);
-            expect(result[0]).toEqual({
-                categoryId: 'cat-1',
-                name: 'JavaScript',
-                storyCount: 25,
-            });
-        });
-
-        it('should retrieve trending categories with custom limit', async () => {
-            const mockTrendingData = [
-                { categoryId: 'cat-1', name: 'JavaScript', storyCount: 25 },
-                { categoryId: 'cat-2', name: 'React', storyCount: 18 },
-            ];
-
-            mockCategoryRepository.getTrendingCategories.mockResolvedValue(
-                mockTrendingData,
-            );
-
-            const result = await categoryService.getTrendingCategories(2);
-
-            expect(
-                mockCategoryRepository.getTrendingCategories,
-            ).toHaveBeenCalledWith(2);
-            expect(result.length).toBe(2);
-        });
-
-        it('should return empty array when no trending categories exist', async () => {
-            mockCategoryRepository.getTrendingCategories.mockResolvedValue([]);
-
-            const result = await categoryService.getTrendingCategories();
-
-            expect(result).toEqual([]);
         });
     });
 });

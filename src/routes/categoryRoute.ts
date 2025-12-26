@@ -31,14 +31,6 @@ categoryRouter.get(
     categoryController.getAllCategories,
 );
 
-categoryRouter.get(
-    '/trending',
-    apiLimiter,
-    authentication(),
-    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
-    categoryController.getTrendingCategories,
-);
-
 categoryRouter.delete(
     '/:categoryId',
     apiLimiter,
