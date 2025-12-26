@@ -119,6 +119,7 @@ export class UserController {
             const user: UserResponseDTO = await this.userService.updateProfile(
                 userId!,
                 req.body,
+                req.file,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(user, USER_RESPONSE_MESSAGES.UPDATED),

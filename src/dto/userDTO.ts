@@ -55,6 +55,7 @@ export const UpdateProfileSchema = z
             .url('Invalid profile picture URL')
             .optional()
             .nullable(),
+        bio: z.string().trim().optional().nullable(),
     })
     .strict()
     .refine((data) => Object.keys(data).length > 0, {
@@ -96,6 +97,9 @@ export class UserResponseDTO extends BaseResponseDTO {
 
     @Expose()
     profilePictureUrl?: string;
+
+    @Expose()
+    bio?: string;
 
     @Expose()
     @Type(() => Object)

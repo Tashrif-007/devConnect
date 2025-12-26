@@ -1,4 +1,5 @@
 import { UserRepository } from '../repositories/userRepository';
+import { CloudinaryService } from './cloudinaryService';
 import {
     CreateUserDTO,
     UpdateUserDTO,
@@ -19,7 +20,10 @@ import { injectable } from 'tsyringe';
 
 @injectable()
 export class UserService {
-    constructor(private userRepository: UserRepository) {}
+    constructor(
+        private userRepository: UserRepository,
+        private cloudinaryService: CloudinaryService,
+    ) {}
 
     async createUser(userData: CreateUserDTO): Promise<UserResponseDTO> {
         const existingUserByUsername = await this.userRepository.findByUsername(
@@ -102,7 +106,16 @@ export class UserService {
     async updateProfile(
         userId: string,
         profileData: UpdateProfileDTO,
+        file?: { buffer: Buffer; mimetype: string },
     ): Promise<UserResponseDTO> {
+        if (file) {
+            const profilePictureUrl = await this.cloudinaryService.uploadImage(
+                file,
+                'devconnect/profile-pictures',
+            );
+            profileData.profilePictureUrl = profilePictureUrl;
+        }
+
         const user = await this.userRepository.update(userId, profileData);
         if (!user) {
             throw new NotFoundError(USER_RESPONSE_MESSAGES.NOT_FOUND);
