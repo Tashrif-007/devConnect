@@ -34,3 +34,38 @@ export const authentication = () => {
         }
     };
 };
+
+export const optionalAuthentication = () => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authHeader = req.headers.authorization;
+
+            if (!authHeader) {
+                next();
+                return;
+            }
+
+            const tokenParts = authHeader.split(' ');
+            if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+                next();
+                return;
+            }
+
+            const token = tokenParts[1];
+            if (!token) {
+                next();
+                return;
+            }
+
+            try {
+                const decoded = verifyToken(token);
+                (req as authenticatedRequest).decoded = decoded;
+            } catch {
+                next();
+            }
+            next();
+        } catch (error) {
+            next(error);
+        }
+    };
+};

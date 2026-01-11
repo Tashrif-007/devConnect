@@ -11,7 +11,10 @@ import {
     StoryIdParamSchema,
 } from '../dto/storyDTO';
 import { PaginationQuerySchema } from '../dto/paginationDTO';
-import { authentication } from '../middlewares/authentication';
+import {
+    authentication,
+    optionalAuthentication,
+} from '../middlewares/authentication';
 import {
     checkRequiredRoles,
     storyUpdateDeleteAuthorization,
@@ -32,11 +35,18 @@ storyRouter.post(
 storyRouter.get(
     '/',
     validateRequestQuery(PaginationQuerySchema),
+    optionalAuthentication(),
     storyController.getAllStories,
+);
+storyRouter.get(
+    '/user/:userId',
+    optionalAuthentication(),
+    storyController.getStoriesByUserId,
 );
 storyRouter.get(
     '/:storyId',
     validateRequestParams(StoryIdParamSchema),
+    optionalAuthentication(),
     storyController.getStoryById,
 );
 storyRouter.put(

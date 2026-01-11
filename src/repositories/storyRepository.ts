@@ -4,6 +4,7 @@ import { Category } from '../entity/categoryEntity';
 import { CreateStoryDTO, UpdateStoryDTO } from '../dto/storyDTO';
 import { UpdateResult } from 'typeorm';
 import { PaginationQuery } from '../dto/paginationDTO';
+import { SortDirection } from '../enums';
 import 'reflect-metadata';
 import { injectable } from 'tsyringe';
 
@@ -29,7 +30,7 @@ export class StoryRepository {
     }
 
     async findAll(
-        paginationDTO: PaginationQuery
+        paginationDTO: PaginationQuery,
     ): Promise<{ data: Story[]; total: number }> {
         const offset = (paginationDTO.page - 1) * paginationDTO.itemsPerPage;
 
@@ -47,7 +48,13 @@ export class StoryRepository {
             query = query.leftJoinAndSelect('story.categories', 'categories');
         }
 
-        query = query.orderBy(paginationDTO.orderBy, paginationDTO.sortBy).skip(offset).take(paginationDTO.itemsPerPage);
+        query = query
+            .orderBy(
+                paginationDTO.orderBy || 'story.createdAt',
+                paginationDTO.sortBy || SortDirection.DESC,
+            )
+            .skip(offset)
+            .take(paginationDTO.itemsPerPage);
 
         const [data, total] = await query.getManyAndCount();
         return { data, total };
@@ -82,7 +89,10 @@ export class StoryRepository {
         }
 
         query = query
-            .orderBy(paginationDTO.orderBy, paginationDTO.sortBy)
+            .orderBy(
+                paginationDTO.orderBy || 'story.createdAt',
+                paginationDTO.sortBy || SortDirection.DESC,
+            )
             .skip(offset)
             .take(paginationDTO.itemsPerPage);
 
@@ -94,6 +104,14 @@ export class StoryRepository {
         return this.storyRepository.findOne({
             where: { storyId },
             relations: ['user', 'categories'],
+        });
+    }
+
+    async findByUserId(userId: string): Promise<Story[]> {
+        return this.storyRepository.find({
+            where: { userId },
+            relations: ['user', 'categories'],
+            order: { createdAt: 'DESC' },
         });
     }
 
