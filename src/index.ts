@@ -10,7 +10,6 @@ import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
 import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
-import uploadRouter from './routes/uploadRoute';
 import { apiLimiter } from './middlewares/rateLimiter';
 import categoryRouter from './routes/categoryRoute';
 import voteRouter from './routes/voteRoute';
@@ -40,7 +39,6 @@ app.use(`${VERSION}/stories`, storyRouter, voteRouter, commentRouter);
 app.use(`${VERSION}/auth`, authRouter);
 app.use(`${VERSION}/admin`, adminRouter);
 app.use(`${VERSION}/categories`, categoryRouter);
-app.use(`${VERSION}/uploads`, uploadRouter);
 
 app.get(`${VERSION}/health`, (req, res) => {
     const healthData = {

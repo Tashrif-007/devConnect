@@ -2,8 +2,8 @@ import { injectable } from 'tsyringe';
 import { VoteRepository } from '../repositories/voteRepository';
 import { StoryRepository } from '../repositories/storyRepository';
 import { VoteType } from '../enums/voteType';
-import { ConflictError, NotFoundError } from '../errors/errors';
-import { VOTE_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
+import { NotFoundError } from '../errors/errors';
+import { ERROR_MESSAGES } from '../constants/messages';
 import { VoteCountResponseDTO } from '../dto/voteDTO';
 
 @injectable()
@@ -29,43 +29,30 @@ export class VoteService {
 
         if (existingVote) {
             if (existingVote.voteType === voteType) {
-                throw new ConflictError(
-                    VOTE_RESPONSE_MESSAGES.VOTE_ALREADY_EXISTS,
-                );
+                // If same vote type is submitted again, set to NONE
+                await this.voteRepository.update(existingVote.voteId, VoteType.NONE);
+            } else {
+                // If opposite vote type, update to the new vote type
+                await this.voteRepository.update(existingVote.voteId, voteType);
             }
-            await this.voteRepository.update(existingVote.voteId, voteType);
         } else {
+            // Create new vote if none exists
             await this.voteRepository.create(userId, storyId, voteType);
         }
         const counts = await this.voteRepository.getVoteCounts(storyId);
+        
+        // Return the resulting userVote (NONE if toggle, or the new vote type)
+        let userVote: VoteType | null;
+        if (existingVote && existingVote.voteType === voteType) {
+            userVote = VoteType.NONE; // Toggled to NONE
+        } else {
+            userVote = voteType; // New vote or switched vote
+        }
+        
         return {
             upvotes: counts.upvotes,
             downvotes: counts.downvotes,
-            userVote: voteType,
-        };
-    }
-
-    async removeVote(
-        userId: string,
-        storyId: string,
-    ): Promise<VoteCountResponseDTO> {
-        const story = await this.storyRepository.findById(storyId);
-        if (!story) {
-            throw new NotFoundError(ERROR_MESSAGES.RESOURCE_NOT_FOUND);
-        }
-        const vote = await this.voteRepository.findByUserAndStory(
-            userId,
-            storyId,
-        );
-        if (!vote) {
-            throw new NotFoundError(VOTE_RESPONSE_MESSAGES.VOTE_NOT_FOUND);
-        }
-        await this.voteRepository.softDelete(userId, storyId);
-        const counts = await this.voteRepository.getVoteCounts(storyId);
-        return {
-            upvotes: counts.upvotes,
-            downvotes: counts.downvotes,
-            userVote: null,
+            userVote,
         };
     }
 
@@ -82,11 +69,14 @@ export class VoteService {
         };
     }
 
-    async getVoteStatsOnly(storyId: string): Promise<VoteCountResponseDTO> {
+    async getVoteStatsOnly(userId: string, storyId: string): Promise<VoteCountResponseDTO> {
         const counts = await this.voteRepository.getVoteCounts(storyId);
+        const voteType = await this.voteRepository.getUserVote(userId, storyId);
+        const userVote = voteType === VoteType.NONE ? null : voteType;
         return {
             upvotes: counts.upvotes,
             downvotes: counts.downvotes,
+            userVote,
         };
     }
 
@@ -99,8 +89,9 @@ export class VoteService {
             throw new NotFoundError(ERROR_MESSAGES.RESOURCE_NOT_FOUND);
         }
 
-        const userVote = await this.voteRepository.getUserVote(userId, storyId);
+        const voteType = await this.voteRepository.getUserVote(userId, storyId);
         const counts = await this.voteRepository.getVoteCounts(storyId);
+        const userVote = voteType === VoteType.NONE ? null : voteType;
 
         return {
             upvotes: counts.upvotes,

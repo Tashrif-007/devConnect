@@ -33,24 +33,6 @@ export class VoteController {
         }
     };
 
-    removeVote = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = (req as authenticatedRequest).decoded?.userId;
-            const { storyId } = req.params;
-
-            const result = await this.voteService.removeVote(userId!, storyId);
-
-            res.status(HttpStatus.OK).json(
-                ResponseFormatter.success(
-                    result,
-                    VOTE_RESPONSE_MESSAGES.VOTE_REMOVED,
-                ),
-            );
-        } catch (error) {
-            next(error);
-        }
-    };
-
     getVoteStats = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { storyId } = req.params;

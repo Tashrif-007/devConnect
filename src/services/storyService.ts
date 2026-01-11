@@ -44,10 +44,11 @@ export class StoryService {
 
     private async enrichStoryWithVotesAndComments(
         story: Story,
+        userId?: string,
     ): Promise<StoryResponseDTO> {
-        const voteStats = await this.voteService.getVoteStatsOnly(
-            story.storyId,
-        );
+        const voteStats = userId
+            ? await this.voteService.getVoteStatsOnly(userId, story.storyId)
+            : { upvotes: 0, downvotes: 0, userVote: null };
         const comments = await this.commentService.getCommentsByStoryOnly(
             story.storyId,
             1,
@@ -61,7 +62,10 @@ export class StoryService {
         return StoryResponseDTO.fromEntity(enrichedData);
     }
 
-    async createStory(storyData: CreateStoryDTO): Promise<StoryResponseDTO> {
+    async createStory(
+        storyData: CreateStoryDTO,
+        userId?: string,
+    ): Promise<StoryResponseDTO> {
         if (storyData.categoryIds && storyData.categoryIds.length > 0) {
             const invalidCategoryIds =
                 await this.categoryService.getInvalidCategoryIds(
@@ -83,11 +87,12 @@ export class StoryService {
             }
         }
         const story = await this.storyRepository.create(storyData);
-        return StoryResponseDTO.fromEntity(story);
+        return this.enrichStoryWithVotesAndComments(story, userId);
     }
 
     async getAllStories(
         paginationDTO: PaginationQuery,
+        userId?: string,
     ): Promise<PaginatedResponseDTO<StoryResponseDTO>> {
         paginationDTO.page = paginationDTO.page || 1;
         paginationDTO.itemsPerPage = paginationDTO.itemsPerPage || 10;
@@ -101,7 +106,7 @@ export class StoryService {
 
         const enrichedStories = await Promise.all(
             result.data.map((story: Story) =>
-                this.enrichStoryWithVotesAndComments(story),
+                this.enrichStoryWithVotesAndComments(story, userId),
             ),
         );
 
@@ -113,13 +118,40 @@ export class StoryService {
         );
     }
 
-    async getStoryById(storyId: string): Promise<StoryResponseDTO> {
+    async getStoryById(
+        storyId: string,
+        userId?: string,
+    ): Promise<StoryResponseDTO> {
         const story = await this.storyRepository.findById(storyId);
         this.ensureExists(story);
-        return this.enrichStoryWithVotesAndComments(story!);
+        return this.enrichStoryWithVotesAndComments(story!, userId);
     }
 
-    async updateStory(storyId: string, storyData: UpdateStoryDTO) {
+    async getStoriesByUserId(
+        userId: string,
+    ): Promise<PaginatedResponseDTO<StoryResponseDTO>> {
+        const result = await this.storyRepository.findByUserId(userId);
+
+        const enrichedStories = await Promise.all(
+            result.map((story: Story) =>
+                this.enrichStoryWithVotesAndComments(story),
+            ),
+        );
+
+        // Return paginated response with all stories (no pagination for user stories)
+        return createPaginatedResponse(
+            enrichedStories,
+            enrichedStories.length,
+            1,
+            enrichedStories.length,
+        );
+    }
+
+    async updateStory(
+        storyId: string,
+        storyData: UpdateStoryDTO,
+        userId?: string,
+    ) {
         if (storyData.categoryIds && storyData.categoryIds.length > 0) {
             const invalidCategoryIds =
                 await this.categoryService.getInvalidCategoryIds(
@@ -144,7 +176,7 @@ export class StoryService {
             storyData,
         );
         this.ensureExists(story);
-        return this.enrichStoryWithVotesAndComments(story!);
+        return this.enrichStoryWithVotesAndComments(story!, userId);
     }
 
     async deleteStory(storyId: string): Promise<void> {
@@ -154,7 +186,10 @@ export class StoryService {
         }
     }
 
-    async regenerateSummary(storyId: string): Promise<StoryResponseDTO> {
+    async regenerateSummary(
+        storyId: string,
+        userId?: string,
+    ): Promise<StoryResponseDTO> {
         const story = await this.storyRepository.findById(storyId);
         this.ensureExists(story);
 
@@ -168,7 +203,7 @@ export class StoryService {
                 },
             );
             this.ensureExists(updatedStory);
-            return this.enrichStoryWithVotesAndComments(updatedStory!);
+            return this.enrichStoryWithVotesAndComments(updatedStory!, userId);
         } catch {
             throw new OpenRouterError(
                 ERROR_MESSAGES.BAD_GATEWAY,
