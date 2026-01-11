@@ -22,7 +22,6 @@ import {
     signEmailConfirmationToken,
     signToken,
     verifyEmailConfirmationToken,
-    verifyToken,
 } from '../utils/jwtUtil';
 import { EmailService } from './emailService';
 import path from 'path';
@@ -236,9 +235,9 @@ export class AuthService {
 
     async updatePassword(
         userId: string,
+        oldPassword: string,
         newPassword: string,
         confirmPassword: string,
-        sessionToken: string,
     ) {
         if(newPassword !== confirmPassword) {
             throw new ConflictError(ERROR_MESSAGES.CONFLICT);
@@ -247,21 +246,9 @@ export class AuthService {
         if (!auth) {
             throw new NotFoundError(ERROR_MESSAGES.RESOURCE_NOT_FOUND);
         }
-        try {
-            const decoded = verifyToken(sessionToken);
-            if (decoded.type !== 'password-reset') {
-                throw new UnauthorizedError(ERROR_MESSAGES.INVALID_TOKEN);
-            }
-        } catch (error) {
-            throw new UnauthorizedError(ERROR_MESSAGES.INVALID_TOKEN);
-        }
 
-        if (auth.isUsed) {
-            throw new UnauthorizedError(ERROR_MESSAGES.USED);
-        }
-
-        if (!auth.codeExpiresAt || new Date() > auth.codeExpiresAt) {
-            throw new UnauthorizedError(ERROR_MESSAGES.EXPIRED);
+        if(!bcrypt.compare(oldPassword, auth.password)) {
+            throw new ConflictError(AUTH_RESPONSE_MESSAGES.INVALID_CREDENTIALS);
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);

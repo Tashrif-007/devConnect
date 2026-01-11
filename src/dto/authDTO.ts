@@ -71,17 +71,12 @@ export const UpdateAuthSchema = z.object({
     passwordLastModificationTime: z.date().optional(),
 });
 
-export const ValidateCodeSchema = z.object({
-    confirmationCode: z
-        .string({ message: 'Confirmation code is required' })
-        .trim()
-        .min(1, 'Confirmation code is required'),
-});
+
 
 export const UpdatePasswordWithTokenSchema = z.object({
+    oldPassword: passwordSchema,
     newPassword: passwordSchema,
     confirmPassword: passwordSchema,
-    sessionToken: z.string({ message: 'Session token is required' }),
 });
 
 export type SignupDTO = z.infer<typeof SignupSchema>;
