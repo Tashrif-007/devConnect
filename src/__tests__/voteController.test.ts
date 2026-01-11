@@ -19,7 +19,6 @@ describe('VoteController', () => {
     beforeEach(() => {
         mockVoteService = {
             addVote: jest.fn(),
-            removeVote: jest.fn(),
             getVoteStats: jest.fn(),
             getVoteStatsOnly: jest.fn(),
             getUserVote: jest.fn(),
@@ -92,43 +91,44 @@ describe('VoteController', () => {
         });
     });
 
-    describe('removeVote', () => {
-        it('should remove a vote successfully', async () => {
+    describe('getUserVote', () => {
+        it('should get user vote successfully', async () => {
             const voteStats = {
-                upvotes: 0,
-                downvotes: 0,
-                userVote: null,
+                upvotes: 5,
+                downvotes: 2,
+                userVote: VoteType.UPVOTE,
             };
 
             const authReq = mockRequest as authenticatedRequest;
             authReq.decoded = { userId: 'user-123' } as jwtPayload;
             mockRequest.params = { storyId: 'story-123' };
 
-            mockVoteService.removeVote.mockResolvedValue(voteStats);
+            mockVoteService.getUserVote.mockResolvedValue(voteStats);
 
-            await voteController.removeVote(
+            await voteController.getUserVote(
                 mockRequest as Request,
                 mockResponse as Response,
                 mockNext,
             );
 
-            expect(mockVoteService.removeVote).toHaveBeenCalledWith(
+            expect(mockVoteService.getUserVote).toHaveBeenCalledWith(
                 'user-123',
                 'story-123',
             );
+            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalled();
         });
 
         it('should call next with error when service throws', async () => {
             const error = new Error('Vote service error');
 
-            const authReq2 = mockRequest as authenticatedRequest;
-            authReq2.decoded = { userId: 'user-123' } as jwtPayload;
+            const authReq3 = mockRequest as authenticatedRequest;
+            authReq3.decoded = { userId: 'user-123' } as jwtPayload;
             mockRequest.params = { storyId: 'story-123' };
 
-            mockVoteService.removeVote.mockRejectedValue(error);
+            mockVoteService.getUserVote.mockRejectedValue(error);
 
-            await voteController.removeVote(
+            await voteController.getUserVote(
                 mockRequest as Request,
                 mockResponse as Response,
                 mockNext,
@@ -170,53 +170,6 @@ describe('VoteController', () => {
             mockVoteService.getVoteStats.mockRejectedValue(error);
 
             await voteController.getVoteStats(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNext,
-            );
-
-            expect(mockNext).toHaveBeenCalledWith(error);
-        });
-    });
-
-    describe('getUserVote', () => {
-        it('should get user vote successfully', async () => {
-            const voteStats = {
-                upvotes: 5,
-                downvotes: 2,
-                userVote: VoteType.UPVOTE,
-            };
-
-            const authReq = mockRequest as authenticatedRequest;
-            authReq.decoded = { userId: 'user-123' } as jwtPayload;
-            mockRequest.params = { storyId: 'story-123' };
-
-            mockVoteService.getUserVote.mockResolvedValue(voteStats);
-
-            await voteController.getUserVote(
-                mockRequest as Request,
-                mockResponse as Response,
-                mockNext,
-            );
-
-            expect(mockVoteService.getUserVote).toHaveBeenCalledWith(
-                'user-123',
-                'story-123',
-            );
-            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-            expect(mockResponse.json).toHaveBeenCalled();
-        });
-
-        it('should call next with error when service throws', async () => {
-            const error = new Error('Vote service error');
-
-            const authReq3 = mockRequest as authenticatedRequest;
-            authReq3.decoded = { userId: 'user-123' } as jwtPayload;
-            mockRequest.params = { storyId: 'story-123' };
-
-            mockVoteService.getUserVote.mockRejectedValue(error);
-
-            await voteController.getUserVote(
                 mockRequest as Request,
                 mockResponse as Response,
                 mockNext,

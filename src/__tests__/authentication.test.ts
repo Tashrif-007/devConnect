@@ -253,5 +253,92 @@ describe('Authentication Middleware', () => {
                 mockPayload,
             );
         });
+
+        it('should skip authentication when authorization header is missing', () => {
+            mockRequest.headers = {};
+
+            authMiddleware(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith();
+            expect(
+                (mockRequest as authenticatedRequest).decoded,
+            ).toBeUndefined();
+        });
+
+        it('should skip authentication when Bearer prefix is missing', () => {
+            mockRequest.headers = {
+                authorization: 'InvalidPrefix valid-token-123',
+            };
+
+            authMiddleware(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith();
+            expect(
+                (mockRequest as authenticatedRequest).decoded,
+            ).toBeUndefined();
+        });
+
+        it('should skip authentication when token part is empty', () => {
+            mockRequest.headers = {
+                authorization: 'Bearer ',
+            };
+
+            authMiddleware(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith();
+            expect(
+                (mockRequest as authenticatedRequest).decoded,
+            ).toBeUndefined();
+        });
+
+        it('should skip authentication when authorization format has wrong number of parts', () => {
+            mockRequest.headers = {
+                authorization: 'Bearer token extra-part',
+            };
+
+            authMiddleware(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith();
+            expect(
+                (mockRequest as authenticatedRequest).decoded,
+            ).toBeUndefined();
+        });
+
+        it('should skip authentication when token verification fails', () => {
+            mockRequest.headers = {
+                authorization: 'Bearer invalid-token',
+            };
+
+            (jwtUtil.verifyToken as jest.Mock).mockImplementation(() => {
+                throw new Error('Invalid token');
+            });
+
+            authMiddleware(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith();
+            expect(
+                (mockRequest as authenticatedRequest).decoded,
+            ).toBeUndefined();
+        });
     });
 });

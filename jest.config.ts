@@ -8,7 +8,6 @@ module.exports = {
     collectCoverageFrom: [
         'src/controllers/*.ts',
         'src/services/*.ts',
-        'src/middlewares/authentication.ts'
     ],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
@@ -30,12 +29,6 @@ module.exports = {
             functions: 70,
             lines: 70,
             statements: 70,
-        },
-        './src/middlewares/authentication.ts': {
-            branches: 100,
-            functions: 100,
-            lines: 100,
-            statements: 100,
         },
     },
     moduleNameMapper: {

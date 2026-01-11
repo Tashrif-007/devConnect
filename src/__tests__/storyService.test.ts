@@ -24,6 +24,7 @@ import {
     OpenRouterError,
 } from '../errors/errors';
 import { STORY_RESPONSE_MESSAGES, ERROR_MESSAGES } from '../constants/messages';
+import { VoteType } from '../enums/voteType';
 
 describe('StoryService', () => {
     let storyService: StoryService;
@@ -84,6 +85,7 @@ describe('StoryService', () => {
             findById: jest.fn(),
             updateStory: jest.fn(),
             softDelete: jest.fn(),
+            findByUserId: jest.fn(),
         } as unknown as jest.Mocked<StoryRepository>;
 
         mockVoteService = {
@@ -632,17 +634,20 @@ describe('StoryService', () => {
     describe('story enrichment with votes and comments', () => {
         it('should enrich story with votes and comments on getStoryById', async () => {
             const mockStory = createMockStory();
+            const userId = 'user-123';
 
             mockStoryRepository.findById.mockResolvedValue(mockStory);
             mockVoteService.getVoteStatsOnly.mockResolvedValue({
                 upvotes: 5,
                 downvotes: 2,
+                userVote: VoteType.UPVOTE,
             });
             mockCommentService.getCommentsByStoryOnly.mockResolvedValue([]);
 
-            const result = await storyService.getStoryById('story-123');
+            const result = await storyService.getStoryById('story-123', userId);
 
             expect(mockVoteService.getVoteStatsOnly).toHaveBeenCalledWith(
+                userId,
                 'story-123',
             );
             expect(
@@ -652,6 +657,7 @@ describe('StoryService', () => {
             expect(result.votes).toEqual({
                 upvotes: 5,
                 downvotes: 2,
+                userVote: VoteType.UPVOTE,
             });
         });
 
@@ -666,6 +672,7 @@ describe('StoryService', () => {
                 sortBy: SortDirection.DESC,
                 orderBy: StoryOrderBy.CREATED_AT,
             };
+            const userId = 'user-123';
 
             mockStoryRepository.findAll.mockResolvedValue({
                 data: mockStories,
@@ -674,10 +681,14 @@ describe('StoryService', () => {
             mockVoteService.getVoteStatsOnly.mockResolvedValue({
                 upvotes: 3,
                 downvotes: 1,
+                userVote: VoteType.DOWNVOTE,
             });
             mockCommentService.getCommentsByStoryOnly.mockResolvedValue([]);
 
-            const result = await storyService.getAllStories(paginationDTO);
+            const result = await storyService.getAllStories(
+                paginationDTO,
+                userId,
+            );
 
             expect(mockVoteService.getVoteStatsOnly).toHaveBeenCalledTimes(2);
             expect(
@@ -686,6 +697,28 @@ describe('StoryService', () => {
             expect(result.data).toHaveLength(2);
             expect(result.data[0].votes).toBeDefined();
             expect(result.data[0].comments).toBeDefined();
+        });
+
+        it('should get stories by user ID', async () => {
+            const mockStories = [
+                createMockStory(),
+                createMockStory({ storyId: 'story-2' }),
+            ];
+            const userId = 'user-123';
+
+            mockStoryRepository.findByUserId.mockResolvedValue(mockStories);
+            mockCommentService.getCommentsByStoryOnly.mockResolvedValue([]);
+
+            const result = await storyService.getStoriesByUserId(userId);
+
+            expect(mockStoryRepository.findByUserId).toHaveBeenCalledWith(
+                userId,
+            );
+            expect(
+                mockCommentService.getCommentsByStoryOnly,
+            ).toHaveBeenCalledTimes(2);
+            expect(result.data).toHaveLength(2);
+            expect(result.pagination).toBeDefined();
         });
     });
 });

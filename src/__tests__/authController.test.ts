@@ -485,15 +485,15 @@ describe('AuthController', () => {
     describe('updatePassword', () => {
         it('should successfully update password and return 200 OK', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const oldPassword = 'OldPass123!';
             const newPassword = 'NewPass123!';
             const confirmPassword = 'NewPass123!';
-            const sessionToken = 'session-token-123';
 
             const mockUpdateResponse = {
                 message: 'Password updated successfully',
             };
 
-            mockRequest.body = { newPassword, confirmPassword, sessionToken };
+            mockRequest.body = { oldPassword, newPassword, confirmPassword };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -509,9 +509,9 @@ describe('AuthController', () => {
 
             expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
                 userId,
+                oldPassword,
                 newPassword,
                 confirmPassword,
-                sessionToken,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
@@ -526,12 +526,12 @@ describe('AuthController', () => {
 
         it('should pass error to next middleware if session token is invalid', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const oldPassword = 'OldPass123!';
             const newPassword = 'NewPass123!';
             const confirmPassword = 'NewPass123!';
-            const sessionToken = 'invalid-token';
-            const error = new Error('Invalid or expired session token');
+            const error = new Error('Invalid credentials');
 
-            mockRequest.body = { newPassword, confirmPassword, sessionToken };
+            mockRequest.body = { oldPassword, newPassword, confirmPassword };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -545,20 +545,21 @@ describe('AuthController', () => {
 
             expect(mockAuthService.updatePassword).toHaveBeenCalledWith(
                 userId,
+                oldPassword,
                 newPassword,
                 confirmPassword,
-                sessionToken,
             );
             expect(mockNext).toHaveBeenCalledWith(error);
         });
 
-        it('should pass error to next middleware if code has expired', async () => {
+        it('should pass error to next middleware if passwords do not match', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const oldPassword = 'OldPass123!';
             const newPassword = 'NewPass123!';
-            const sessionToken = 'session-token-123';
-            const error = new Error('Code has expired');
+            const confirmPassword = 'DifferentPass123!';
+            const error = new Error('Passwords do not match');
 
-            mockRequest.body = { newPassword, sessionToken };
+            mockRequest.body = { oldPassword, newPassword, confirmPassword };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -573,13 +574,14 @@ describe('AuthController', () => {
             expect(mockNext).toHaveBeenCalledWith(error);
         });
 
-        it('should pass error to next middleware if code has been used', async () => {
+        it('should pass error to next middleware if old password is incorrect', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const oldPassword = 'WrongPass123!';
             const newPassword = 'NewPass123!';
-            const sessionToken = 'session-token-123';
-            const error = new Error('Code has already been used');
+            const confirmPassword = 'NewPass123!';
+            const error = new Error('Invalid credentials');
 
-            mockRequest.body = { newPassword, sessionToken };
+            mockRequest.body = { oldPassword, newPassword, confirmPassword };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
@@ -596,11 +598,12 @@ describe('AuthController', () => {
 
         it('should pass error to next middleware if user not found', async () => {
             const userId = '123e4567-e89b-12d3-a456-426614174000';
+            const oldPassword = 'OldPass123!';
             const newPassword = 'NewPass123!';
-            const sessionToken = 'session-token-123';
+            const confirmPassword = 'NewPass123!';
             const error = new Error('User not found');
 
-            mockRequest.body = { newPassword, sessionToken };
+            mockRequest.body = { oldPassword, newPassword, confirmPassword };
             (mockRequest as authenticatedRequest).decoded = {
                 userId,
             } as jwtPayload;
