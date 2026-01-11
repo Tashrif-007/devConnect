@@ -20,8 +20,7 @@ export const PaginationQuerySchema = z.object({
     orderBy: z
         .union([z.enum(UserOrderBy), z.enum(StoryOrderBy)])
         .optional()
-        .default(UserOrderBy.USER_ID),
-});
+    });
 
 export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;
 

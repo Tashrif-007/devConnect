@@ -40,14 +40,10 @@ userRouter.put(
 userRouter.get(
     '/',
     validateRequestQuery(PaginationQuerySchema),
-    authentication(),
-    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     userController.getAllUsers,
 );
 userRouter.get(
     '/:userId',
-    authentication(),
-    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     validateRequestParams(UserIdParamSchema),
     userController.getUserById,
 );

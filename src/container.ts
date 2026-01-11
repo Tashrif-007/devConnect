@@ -26,7 +26,6 @@ import { CategoryController } from './controllers/categoryController';
 import { AdminController } from './controllers/adminController';
 import { VoteController } from './controllers/voteController';
 import { CommentController } from './controllers/commentController';
-import { UploadController } from './controllers/uploadController';
 
 import {
     DatabaseContextManager,
@@ -58,7 +57,6 @@ container.register(CategoryController, { useClass: CategoryController });
 container.register(AdminController, { useClass: AdminController });
 container.register(VoteController, { useClass: VoteController });
 container.register(CommentController, { useClass: CommentController });
-container.register(UploadController, { useClass: UploadController });
 
 container.registerInstance(DatabaseContextManager, databaseContext);
 

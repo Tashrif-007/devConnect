@@ -105,6 +105,7 @@ describe('StoryController', () => {
             createStory: jest.fn(),
             getAllStories: jest.fn(),
             getStoryById: jest.fn(),
+            getStoriesByUserId: jest.fn(),
             updateStory: jest.fn(),
             deleteStory: jest.fn(),
             regenerateSummary: jest.fn(),
@@ -160,6 +161,7 @@ describe('StoryController', () => {
                     body: createStoryDTO.body,
                     userId: mockRequest.decoded?.userId,
                 }),
+                mockRequest.decoded?.userId,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(
                 HttpStatus.CREATED,
@@ -202,6 +204,7 @@ describe('StoryController', () => {
                 expect.objectContaining({
                     userId: 'different-user-id',
                 }),
+                'different-user-id',
             );
         });
 
@@ -297,7 +300,10 @@ describe('StoryController', () => {
                 mockNextFunction,
             );
 
-            expect(mockStoryService.getStoryById).toHaveBeenCalledWith(storyId);
+            expect(mockStoryService.getStoryById).toHaveBeenCalledWith(
+                storyId,
+                mockRequest.decoded?.userId,
+            );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
                 ResponseFormatter.success(
@@ -321,7 +327,10 @@ describe('StoryController', () => {
                 mockNextFunction,
             );
 
-            expect(mockStoryService.getStoryById).toHaveBeenCalledWith(storyId);
+            expect(mockStoryService.getStoryById).toHaveBeenCalledWith(
+                storyId,
+                mockRequest.decoded?.userId,
+            );
             expect(mockNextFunction).toHaveBeenCalledWith(error);
             expect(mockResponse.status).not.toHaveBeenCalled();
         });
@@ -349,6 +358,7 @@ describe('StoryController', () => {
             expect(mockStoryService.updateStory).toHaveBeenCalledWith(
                 storyId,
                 updateData,
+                mockRequest.decoded?.userId,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
@@ -382,6 +392,7 @@ describe('StoryController', () => {
             expect(mockStoryService.updateStory).toHaveBeenCalledWith(
                 storyId,
                 updateData,
+                mockRequest.decoded?.userId,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockNextFunction).not.toHaveBeenCalled();
@@ -466,6 +477,7 @@ describe('StoryController', () => {
 
             expect(mockStoryService.regenerateSummary).toHaveBeenCalledWith(
                 storyId,
+                mockRequest.decoded?.userId,
             );
             expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
             expect(mockResponse.json).toHaveBeenCalledWith(
@@ -492,6 +504,7 @@ describe('StoryController', () => {
 
             expect(mockStoryService.regenerateSummary).toHaveBeenCalledWith(
                 storyId,
+                mockRequest.decoded?.userId,
             );
             expect(mockNextFunction).toHaveBeenCalledWith(error);
             expect(mockResponse.status).not.toHaveBeenCalled();
@@ -512,8 +525,66 @@ describe('StoryController', () => {
 
             expect(mockStoryService.regenerateSummary).toHaveBeenCalledWith(
                 storyId,
+                mockRequest.decoded?.userId,
             );
             expect(mockNextFunction).toHaveBeenCalledWith(error);
+        });
+    });
+
+    describe('getStoriesByUserId', () => {
+        it('should retrieve stories by user ID successfully', async () => {
+            const userId = 'user-123';
+            const mockPaginatedResponse = {
+                data: [createMockStoryResponseDTO()],
+                pagination: {
+                    currentPage: 1,
+                    itemsPerPage: 10,
+                    totalItems: 1,
+                    totalPages: 1,
+                    hasNextPage: false,
+                    hasPreviousPage: false,
+                },
+            };
+
+            mockRequest.params = { userId };
+            mockStoryService.getStoriesByUserId.mockResolvedValue(
+                mockPaginatedResponse,
+            );
+
+            await storyController.getStoriesByUserId(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockStoryService.getStoriesByUserId).toHaveBeenCalledWith(
+                userId,
+            );
+            expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+            expect(mockResponse.json).toHaveBeenCalledWith(
+                ResponseFormatter.success(
+                    mockPaginatedResponse,
+                    STORY_RESPONSE_MESSAGES.ALL_RETRIEVED,
+                ),
+            );
+            expect(mockNextFunction).not.toHaveBeenCalled();
+        });
+
+        it('should pass error to next middleware when service fails', async () => {
+            const userId = 'user-123';
+            const error = new Error('Service error');
+
+            mockRequest.params = { userId };
+            mockStoryService.getStoriesByUserId.mockRejectedValue(error);
+
+            await storyController.getStoriesByUserId(
+                mockRequest as Request,
+                mockResponse as Response,
+                mockNextFunction,
+            );
+
+            expect(mockNextFunction).toHaveBeenCalledWith(error);
+            expect(mockResponse.status).not.toHaveBeenCalled();
         });
     });
 });

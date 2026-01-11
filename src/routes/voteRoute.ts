@@ -15,12 +15,6 @@ voteRouter.post(
     voteController.addVote,
 );
 
-voteRouter.delete(
-    '/:storyId/votes',
-    authentication(),
-    voteController.removeVote,
-);
-
 voteRouter.get('/:storyId/votes', voteController.getVoteStats);
 
 voteRouter.get(

@@ -26,8 +26,6 @@ categoryRouter.post(
 categoryRouter.get(
     '/',
     apiLimiter,
-    authentication(),
-    checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     categoryController.getAllCategories,
 );
 

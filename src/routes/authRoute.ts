@@ -6,7 +6,6 @@ import {
     SignupSchema,
     LoginSchema,
     ResendConfirmationEmailSchema,
-    ValidateCodeSchema,
     UpdatePasswordWithTokenSchema,
 } from '../dto/authDTO';
 import { authLimiter, emailLimiter } from '../middlewares/rateLimiter';
@@ -38,24 +37,9 @@ authRouter
         authController.resendConfirmationEmail,
     )
     .post(
-        '/change-password',
-        authentication(),
-        checkRequiredRoles([UserRole.USER]),
-        updateAuthAuthorization(),
-        authController.changePassword,
-    )
-    .post(
-        '/validate-code',
-        authentication(),
-        checkRequiredRoles([UserRole.USER]),
-        updateAuthAuthorization(),
-        validateRequestBody(ValidateCodeSchema),
-        authController.validateCode,
-    )
-    .post(
         '/update-password',
         authentication(),
-        checkRequiredRoles([UserRole.USER]),
+        checkRequiredRoles([UserRole.USER, UserRole.ADMIN]),
         updateAuthAuthorization(),
         validateRequestBody(UpdatePasswordWithTokenSchema),
         authController.updatePassword,

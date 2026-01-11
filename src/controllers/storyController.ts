@@ -21,7 +21,10 @@ export class StoryController {
             const storyData: CreateStoryDTO = req.body;
             const decoded = (req as authenticatedRequest).decoded;
             storyData.userId = decoded!.userId;
-            const story = await this.storyService.createStory(storyData);
+            const story = await this.storyService.createStory(
+                storyData,
+                decoded!.userId,
+            );
             res.status(HttpStatus.CREATED).json(
                 ResponseFormatter.success(
                     story,
@@ -37,8 +40,9 @@ export class StoryController {
         try {
             const paginationQuery: PaginationQuery =
                 req.query as unknown as PaginationQuery;
+            const userId = (req as authenticatedRequest).decoded?.userId;
             const result: PaginatedResponseDTO<StoryResponseDTO> =
-                await this.storyService.getAllStories(paginationQuery);
+                await this.storyService.getAllStories(paginationQuery, userId);
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     result,
@@ -52,8 +56,12 @@ export class StoryController {
 
     getStoryById = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            const userId = (req as authenticatedRequest).decoded?.userId;
             const story: StoryResponseDTO =
-                await this.storyService.getStoryById(req.params.storyId);
+                await this.storyService.getStoryById(
+                    req.params.storyId,
+                    userId,
+                );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
                     story,
@@ -65,11 +73,33 @@ export class StoryController {
         }
     };
 
+    getStoriesByUserId = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const userId = req.params.userId;
+            const result: PaginatedResponseDTO<StoryResponseDTO> =
+                await this.storyService.getStoriesByUserId(userId);
+            res.status(HttpStatus.OK).json(
+                ResponseFormatter.success(
+                    result,
+                    STORY_RESPONSE_MESSAGES.ALL_RETRIEVED,
+                ),
+            );
+        } catch (error) {
+            next(error);
+        }
+    };
+
     updateStory = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            const userId = (req as authenticatedRequest).decoded?.userId;
             const story: StoryResponseDTO = await this.storyService.updateStory(
                 req.params.storyId,
                 req.body,
+                userId,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(
@@ -99,8 +129,10 @@ export class StoryController {
         next: NextFunction,
     ) => {
         try {
+            const userId = (req as authenticatedRequest).decoded?.userId;
             const story = await this.storyService.regenerateSummary(
                 req.params.storyId,
+                userId,
             );
             res.status(HttpStatus.OK).json(
                 ResponseFormatter.success(

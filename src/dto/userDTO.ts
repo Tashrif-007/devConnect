@@ -58,9 +58,6 @@ export const UpdateProfileSchema = z
         bio: z.string().trim().optional().nullable(),
     })
     .strict()
-    .refine((data) => Object.keys(data).length > 0, {
-        message: 'At least one field is required for update',
-    });
 
 export const UserIdParamSchema = z.object({
     userId: z.uuidv4('Invalid user ID format'),
