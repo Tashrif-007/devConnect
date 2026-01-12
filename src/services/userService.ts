@@ -51,7 +51,7 @@ export class UserService {
         const itemsPerPage = paginationDTO.itemsPerPage || 10;
         const find = paginationDTO.find;
         const sortBy = paginationDTO.sortBy || SortDirection.DESC;
-        const orderBy = paginationDTO.orderBy || UserOrderBy.USER_ID;
+        const orderBy = paginationDTO.orderBy || UserOrderBy.JOIN_DATE;
 
         const result = find
             ? await this.userRepository.search(
