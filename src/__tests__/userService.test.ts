@@ -262,7 +262,7 @@ describe('UserService', () => {
                 1,
                 10,
                 SortDirection.DESC,
-                UserOrderBy.USER_ID,
+                UserOrderBy.JOIN_DATE,
             );
             expect(result.data).toHaveLength(1);
         });
