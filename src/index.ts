@@ -23,7 +23,7 @@ const VERSION = envValues.VERSION;
 const app = express();
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(apiLimiter);
 app.use(
