@@ -1,0 +1,62 @@
+[
+    {
+        "username": "marktech",
+        "name": "Mark T.",
+        "email": "mark@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "lisawong",
+        "name": "Lisa Wong",
+        "email": "lisa@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "jamesstack",
+        "name": "James R.",
+        "email": "james@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "sarahdev",
+        "name": "Sarah Chen",
+        "email": "sarah@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "alexmiller",
+        "name": "Alex Miller",
+        "email": "alex@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "emilynative",
+        "name": "Emily Brown",
+        "email": "emily@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "davidsmith",
+        "name": "David Smith",
+        "email": "david@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "sophiajones",
+        "name": "Sophia Jones",
+        "email": "sophia@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "michaelpatel",
+        "name": "Michael Patel",
+        "email": "michael@example.com",
+        "role": "USER"
+    },
+    {
+        "username": "oliviakim",
+        "name": "Olivia Kim",
+        "email": "olivia@example.com",
+        "role": "USER"
+    }
+]
