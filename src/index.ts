@@ -18,6 +18,7 @@ import { swaggerOptions, swaggerUIOptions } from './config/swagger';
 import cors from 'cors';
 
 const PORT = envValues.PORT || 3000;
+const FRONTEND_URL = envValues.FRONTEND_URL as string;
 const VERSION = envValues.VERSION;
 const app = express();
 
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(apiLimiter);
 app.use(
     cors({
-        origin: 'http://localhost:5173',
+        origin: ['http://localhost:5173', FRONTEND_URL],
     }),
 );
 
@@ -49,6 +50,14 @@ app.get(`${VERSION}/health`, (req, res) => {
     res.status(200).json(
         ResponseFormatter.success(healthData, 'Server is healthy'),
     );
+});
+
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Backend is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.use(routeNotFoundHandler);
