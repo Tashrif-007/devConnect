@@ -5,7 +5,7 @@ import {
     validateRequestParams,
 } from '../middlewares/validateRequest';
 import { CategoryIdSchema, CategorySchema } from '../dto/categoryDTO';
-import { apiLimiter } from '../middlewares/rateLimiter';
+import { readLimiter, writeLimiter } from '../middlewares/rateLimiter';
 import { checkRequiredRoles } from '../middlewares/authorization';
 import { UserRole } from '../enums';
 import { authentication } from '../middlewares/authentication';
@@ -16,22 +16,18 @@ const categoryController = container.resolve(CategoryController);
 
 categoryRouter.post(
     '/',
-    apiLimiter,
+    writeLimiter,
     authentication(),
     checkRequiredRoles([UserRole.ADMIN]),
     validateRequestBody(CategorySchema),
     categoryController.createCategory,
 );
 
-categoryRouter.get(
-    '/',
-    apiLimiter,
-    categoryController.getAllCategories,
-);
+categoryRouter.get('/', readLimiter, categoryController.getAllCategories);
 
 categoryRouter.delete(
     '/:categoryId',
-    apiLimiter,
+    writeLimiter,
     authentication(),
     checkRequiredRoles([UserRole.ADMIN]),
     validateRequestParams(CategoryIdSchema),
