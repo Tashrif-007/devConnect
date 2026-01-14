@@ -7,6 +7,7 @@ import {
     validateRequestParams,
     validateRequestQuery,
 } from '../middlewares/validateRequest';
+import { readLimiter, writeLimiter } from '../middlewares/rateLimiter';
 import {
     CreateCommentSchema,
     UpdateCommentSchema,
@@ -19,6 +20,7 @@ const commentController = container.resolve(CommentController);
 
 commentRouter.post(
     '/:storyId/comments',
+    writeLimiter,
     authentication(),
     validateRequestBody(CreateCommentSchema),
     commentController.createComment,
@@ -26,18 +28,21 @@ commentRouter.post(
 
 commentRouter.get(
     '/:storyId/comments',
+    readLimiter,
     validateRequestQuery(PaginationQuerySchema),
     commentController.getCommentsByStory,
 );
 
 commentRouter.get(
     '/comments/:commentId',
+    readLimiter,
     validateRequestParams(CommentIdParamSchema),
     commentController.getCommentById,
 );
 
 commentRouter.patch(
     '/comments/:commentId',
+    writeLimiter,
     authentication(),
     validateRequestParams(CommentIdParamSchema),
     validateRequestBody(UpdateCommentSchema),
@@ -46,6 +51,7 @@ commentRouter.patch(
 
 commentRouter.delete(
     '/comments/:commentId',
+    writeLimiter,
     authentication(),
     validateRequestParams(CommentIdParamSchema),
     commentController.deleteComment,

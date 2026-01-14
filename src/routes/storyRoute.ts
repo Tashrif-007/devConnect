@@ -19,6 +19,7 @@ import {
     checkRequiredRoles,
     storyUpdateDeleteAuthorization,
 } from '../middlewares/authorization';
+import { readLimiter, writeLimiter } from '../middlewares/rateLimiter';
 import { UserRole } from '../enums';
 import { container } from 'tsyringe';
 
@@ -27,6 +28,7 @@ const storyController = container.resolve(StoryController);
 
 storyRouter.post(
     '/',
+    writeLimiter,
     validateRequestBody(CreateStorySchema),
     authentication(),
     checkRequiredRoles([UserRole.USER, UserRole.ADMIN]),
@@ -34,23 +36,27 @@ storyRouter.post(
 );
 storyRouter.get(
     '/',
+    readLimiter,
     validateRequestQuery(PaginationQuerySchema),
     optionalAuthentication(),
     storyController.getAllStories,
 );
 storyRouter.get(
     '/user/:userId',
+    readLimiter,
     optionalAuthentication(),
     storyController.getStoriesByUserId,
 );
 storyRouter.get(
     '/:storyId',
+    readLimiter,
     validateRequestParams(StoryIdParamSchema),
     optionalAuthentication(),
     storyController.getStoryById,
 );
 storyRouter.put(
     '/:storyId',
+    writeLimiter,
     validateRequestParams(StoryIdParamSchema),
     validateRequestBody(UpdateStorySchema),
     authentication(),
@@ -59,6 +65,7 @@ storyRouter.put(
 );
 storyRouter.delete(
     '/:storyId',
+    writeLimiter,
     validateRequestParams(StoryIdParamSchema),
     authentication(),
     storyUpdateDeleteAuthorization(),
@@ -67,6 +74,7 @@ storyRouter.delete(
 
 storyRouter.post(
     '/:storyId/regenerate-summary',
+    writeLimiter,
     validateRequestParams(StoryIdParamSchema),
     authentication(),
     checkRequiredRoles([UserRole.USER]),
