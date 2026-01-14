@@ -77,7 +77,7 @@ storyRouter.post(
     writeLimiter,
     validateRequestParams(StoryIdParamSchema),
     authentication(),
-    checkRequiredRoles([UserRole.USER]),
+    checkRequiredRoles([UserRole.USER, UserRole.ADMIN]),
     storyController.regenerateSummary,
 );
 
