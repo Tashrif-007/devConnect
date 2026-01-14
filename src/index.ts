@@ -10,7 +10,6 @@ import { envValues } from './utils/envParser';
 import storyRouter from './routes/storyRoute';
 import authRouter from './routes/authRoute';
 import adminRouter from './routes/adminRoute';
-import { apiLimiter } from './middlewares/rateLimiter';
 import categoryRouter from './routes/categoryRoute';
 import voteRouter from './routes/voteRoute';
 import commentRouter from './routes/commentRoute';
@@ -25,7 +24,6 @@ const app = express();
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
-app.use(apiLimiter);
 app.use(
     cors({
         origin: ['http://localhost:5173', FRONTEND_URL],
