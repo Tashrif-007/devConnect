@@ -17,6 +17,7 @@ import {
     checkRequiredRoles,
 } from '../middlewares/authorization';
 import { uploadSingleImage } from '../config/multer';
+import { readLimiter, writeLimiter } from '../middlewares/rateLimiter';
 import { UserRole } from '../enums';
 import { container } from 'tsyringe';
 
@@ -25,12 +26,14 @@ const userController = container.resolve(UserController);
 
 userRouter.get(
     '/profile',
+    readLimiter,
     authentication(),
     checkRequiredRoles([UserRole.ADMIN, UserRole.USER]),
     userController.getProfile,
 );
 userRouter.put(
     '/profile',
+    writeLimiter,
     uploadSingleImage,
     validateRequestBody(UpdateProfileSchema),
     authentication(),
@@ -39,16 +42,19 @@ userRouter.put(
 );
 userRouter.get(
     '/',
+    readLimiter,
     validateRequestQuery(PaginationQuerySchema),
     userController.getAllUsers,
 );
 userRouter.get(
     '/:userId',
+    readLimiter,
     validateRequestParams(UserIdParamSchema),
     userController.getUserById,
 );
 userRouter.put(
     '/:userId',
+    writeLimiter,
     validateRequestParams(UserIdParamSchema),
     validateRequestBody(UpdateUserSchema),
     authentication(),
@@ -57,6 +63,7 @@ userRouter.put(
 );
 userRouter.delete(
     '/:userId',
+    writeLimiter,
     validateRequestParams(UserIdParamSchema),
     authentication(),
     userUpdateDeleteAuthorization(),

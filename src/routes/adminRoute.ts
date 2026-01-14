@@ -6,6 +6,7 @@ import {
     validateRequestBody,
     validateRequestParams,
 } from '../middlewares/validateRequest';
+import { writeLimiter } from '../middlewares/rateLimiter';
 import { UpdateRoleSchema } from '../dto/userDTO';
 import { UserIdParamSchema } from '../dto/userDTO';
 import { UserRole } from '../enums';
@@ -16,6 +17,7 @@ const adminController = container.resolve(AdminController);
 
 adminRouter.patch(
     '/role/:userId',
+    writeLimiter,
     validateRequestBody(UpdateRoleSchema),
     validateRequestParams(UserIdParamSchema),
     authentication(),
